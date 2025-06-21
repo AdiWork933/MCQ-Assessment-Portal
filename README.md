@@ -51,6 +51,24 @@ This is a **Streamlit-based web application** that serves as an interactive **Mu
 - Google API Key with access to the `gemini-2.0-flash` model
 
 ---
+## 🖼️ Runtime Images
+
+<table>
+  <tr>
+    <td><img src="https://github.com/user-attachments/assets/7f6bb163-3fab-42a0-95b0-0139be272436" width="100%"/></td>
+    <td><img src="https://github.com/user-attachments/assets/22a6ac91-3514-497c-b182-7ed32b7446c7" width="100%"/></td>
+  </tr>
+  <tr>
+    <td><img src="https://github.com/user-attachments/assets/23790501-c2d9-41e2-977d-dd65dd4ef3de" width="100%"/></td>
+    <td><img src="https://github.com/user-attachments/assets/62201edf-1217-4966-8db0-ddf2dc7f8736" width="100%"/></td>
+  </tr>
+  <tr>
+    <td><img src="https://github.com/user-attachments/assets/8d91cc78-b464-47e0-a6d8-9d79aa4edfb2" width="100%"/></td>
+    <td><img src="https://github.com/user-attachments/assets/1dcb9446-0c4f-4a4d-9d59-2e5accc94807" width="100%"/></td>
+  </tr>
+</table>
+
+---
 
 ### 📦 1. Clone the Repository (or create `app.py`)
 
