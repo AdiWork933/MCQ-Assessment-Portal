@@ -6,6 +6,15 @@ This is a **Streamlit-based web application** that serves as an interactive **Mu
 
 ---
 
+## 💡 Use Cases
+
+- **Educational Institutions**: Automate quizzes for students based on custom subjects and difficulty levels.
+- **Corporate Training**: Quickly generate assessments for employees in training sessions.
+- **Self-Assessment**: Students or learners can generate and practice custom quizzes for revision.
+- **Interview Preparation**: Tech recruiters or candidates can simulate objective-based assessments.
+
+---
+
 ## 🚀 Features
 
 - **Dynamic MCQ Generation**  
