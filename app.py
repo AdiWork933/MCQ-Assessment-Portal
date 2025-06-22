@@ -1,10 +1,10 @@
+# Required Library
 import os
 import streamlit as st
 import json
 from dotenv import load_dotenv
 import google.generativeai as genai
 from fpdf import FPDF
-# Removed datetime import as per request
 
 load_dotenv()
 genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
