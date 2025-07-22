@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}Quiz Report{% endblock %}
+
+{% block content %}
+    <div class="report-section">
+        <h2>Your Quiz Report</h2>
+        {% if filename %}
+            <p>Your report has been generated successfully.</p>
+            <a href="{{ url_for('download_report', filename=filename) }}" class="button download-button">Download Report (PDF)</a>
+            <p class="small-text">Note: This report is for your current submission. You can start a <a href="{{ url_for('start_new_quiz') }}">new quiz</a> anytime.</p>
+        {% else %}
+            <p class="no-report-message">No report available. Please complete a quiz submission first.</p>
+            <a href="{{ url_for('mcq_generation') }}" class="button">Generate New MCQs</a>
+        {% endif %}
+    </div>
+{% endblock %}
