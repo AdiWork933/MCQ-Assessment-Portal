@@ -887,5 +887,5 @@ if __name__ == '__main__':
     
     # Create upload folder if it doesn't exist
     os.makedirs('static/pdfs', exist_ok=True)
-    
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host='0.0.0.0', port=port)
