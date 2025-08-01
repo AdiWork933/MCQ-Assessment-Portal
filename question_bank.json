@@ -1,0 +1,1022 @@
+[
+  {
+    "question": "Which data structure is most suitable for implementing a Least Recently Used (LRU) cache?",
+    "options": [
+      "Array",
+      "Linked List",
+      "Hash Table with a Doubly Linked List",
+      "Binary Search Tree"
+    ],
+    "correct_answer": "Hash Table with a Doubly Linked List",
+    "Difficulty Level": "Intermediate",
+    "subject": "DSA"
+  },
+  {
+    "question": "What is the time complexity of searching for an element in a balanced binary search tree?",
+    "options": [
+      "O(n)",
+      "O(n log n)",
+      "O(log n)",
+      "O(1)"
+    ],
+    "correct_answer": "O(log n)",
+    "Difficulty Level": "Intermediate",
+    "subject": "DSA"
+  },
+  {
+    "question": "Which sorting algorithm has the best average-case time complexity?",
+    "options": [
+      "Bubble Sort",
+      "Insertion Sort",
+      "Merge Sort",
+      "Selection Sort"
+    ],
+    "correct_answer": "Merge Sort",
+    "Difficulty Level": "Intermediate",
+    "subject": "DSA"
+  },
+  {
+    "question": "What is the main advantage of using a heap data structure?",
+    "options": [
+      "Efficient searching",
+      "Efficient sorting",
+      "Efficient priority queue implementation",
+      "Efficient storage"
+    ],
+    "correct_answer": "Efficient priority queue implementation",
+    "Difficulty Level": "Intermediate",
+    "subject": "DSA"
+  },
+  {
+    "question": "Which graph traversal algorithm uses a queue?",
+    "options": [
+      "Depth-First Search (DFS)",
+      "Breadth-First Search (BFS)",
+      "A* Search",
+      "Dijkstra's Algorithm"
+    ],
+    "correct_answer": "Breadth-First Search (BFS)",
+    "Difficulty Level": "Intermediate",
+    "subject": "DSA"
+  },
+  {
+    "question": "What is the purpose of dynamic programming?",
+    "options": [
+      "To reduce space complexity",
+      "To solve problems by breaking them down into smaller overlapping subproblems",
+      "To increase time complexity",
+      "To solve all problems in linear time"
+    ],
+    "correct_answer": "To solve problems by breaking them down into smaller overlapping subproblems",
+    "Difficulty Level": "Intermediate",
+    "subject": "DSA"
+  },
+  {
+    "question": "Which of the following is a collision resolution technique in hashing?",
+    "options": [
+      "Binary Search",
+      "Linear Probing",
+      "Merge Sort",
+      "Depth First Search"
+    ],
+    "correct_answer": "Linear Probing",
+    "Difficulty Level": "Intermediate",
+    "subject": "DSA"
+  },
+  {
+    "question": "What is the space complexity of recursion in the worst case?",
+    "options": [
+      "O(1)",
+      "O(log n)",
+      "O(n)",
+      "O(n^2)"
+    ],
+    "correct_answer": "O(n)",
+    "Difficulty Level": "Intermediate",
+    "subject": "DSA"
+  },
+  {
+    "question": "Which of the following data structures implements the FIFO principle?",
+    "options": [
+      "Stack",
+      "Queue",
+      "Linked List",
+      "Tree"
+    ],
+    "correct_answer": "Queue",
+    "Difficulty Level": "Intermediate",
+    "subject": "DSA"
+  },
+  {
+    "question": "What is the time complexity to insert at the beginning of a singly linked list?",
+    "options": [
+      "O(n)",
+      "O(log n)",
+      "O(1)",
+      "O(n^2)"
+    ],
+    "correct_answer": "O(1)",
+    "Difficulty Level": "Intermediate",
+    "subject": "DSA"
+  },
+  {
+    "question": "Which of the following is a divide-and-conquer algorithm?",
+    "options": [
+      "Bubble Sort",
+      "Insertion Sort",
+      "Merge Sort",
+      "Selection Sort"
+    ],
+    "correct_answer": "Merge Sort",
+    "Difficulty Level": "Intermediate",
+    "subject": "DSA"
+  },
+  {
+    "question": "What is the purpose of a topological sort in a directed acyclic graph (DAG)?",
+    "options": [
+      "To find the shortest path",
+      "To find the longest path",
+      "To find a linear ordering of vertices such that for every directed edge uv, vertex u comes before vertex v in the ordering",
+      "To detect cycles"
+    ],
+    "correct_answer": "To find a linear ordering of vertices such that for every directed edge uv, vertex u comes before vertex v in the ordering",
+    "Difficulty Level": "Intermediate",
+    "subject": "DSA"
+  },
+  {
+    "question": "Which data structure is typically used to implement a stack?",
+    "options": [
+      "Queue",
+      "Array",
+      "Linked List",
+      "Tree"
+    ],
+    "correct_answer": "Linked List",
+    "Difficulty Level": "Intermediate",
+    "subject": "DSA"
+  },
+  {
+    "question": "What is the worst-case time complexity of Quick Sort?",
+    "options": [
+      "O(n)",
+      "O(n log n)",
+      "O(n^2)",
+      "O(log n)"
+    ],
+    "correct_answer": "O(n^2)",
+    "Difficulty Level": "Intermediate",
+    "subject": "DSA"
+  },
+  {
+    "question": "In a binary search tree, which node contains the smallest value?",
+    "options": [
+      "Root node",
+      "Rightmost node",
+      "Leftmost node",
+      "Any leaf node"
+    ],
+    "correct_answer": "Leftmost node",
+    "Difficulty Level": "Intermediate",
+    "subject": "DSA"
+  },
+  {
+    "question": "What is the main purpose of a Trie data structure?",
+    "options": [
+      "Storing numerical data",
+      "Efficient string searching and prefix matching",
+      "Storing key-value pairs",
+      "Sorting data"
+    ],
+    "correct_answer": "Efficient string searching and prefix matching",
+    "Difficulty Level": "Intermediate",
+    "subject": "DSA"
+  },
+  {
+    "question": "Which algorithm is used to find the shortest path in a weighted graph?",
+    "options": [
+      "Depth-First Search (DFS)",
+      "Breadth-First Search (BFS)",
+      "Kruskal's Algorithm",
+      "Dijkstra's Algorithm"
+    ],
+    "correct_answer": "Dijkstra's Algorithm",
+    "Difficulty Level": "Intermediate",
+    "subject": "DSA"
+  },
+  {
+    "question": "What is the time complexity of inserting an element into a hash table in the average case, assuming a good hash function?",
+    "options": [
+      "O(n)",
+      "O(log n)",
+      "O(1)",
+      "O(n log n)"
+    ],
+    "correct_answer": "O(1)",
+    "Difficulty Level": "Intermediate",
+    "subject": "DSA"
+  },
+  {
+    "question": "Which of the following is a type of graph?",
+    "options": [
+      "Linear Graph",
+      "Circular Graph",
+      "Directed Acyclic Graph",
+      "Triangular Graph"
+    ],
+    "correct_answer": "Directed Acyclic Graph",
+    "Difficulty Level": "Intermediate",
+    "subject": "DSA"
+  },
+  {
+    "question": "What is the space complexity of the iterative version of binary search?",
+    "options": [
+      "O(n)",
+      "O(log n)",
+      "O(1)",
+      "O(n log n)"
+    ],
+    "correct_answer": "O(1)",
+    "Difficulty Level": "Intermediate",
+    "subject": "DSA"
+  },
+  {
+    "question": "Which data structure is suitable for implementing undo-redo functionality?",
+    "options": [
+      "Queue",
+      "Binary Search Tree",
+      "Stack",
+      "Heap"
+    ],
+    "correct_answer": "Stack",
+    "Difficulty Level": "Intermediate",
+    "subject": "DSA"
+  },
+  {
+    "question": "What is the purpose of Kruskal's algorithm?",
+    "options": [
+      "Finding the shortest path",
+      "Finding the longest path",
+      "Finding the minimum spanning tree",
+      "Finding all possible paths"
+    ],
+    "correct_answer": "Finding the minimum spanning tree",
+    "Difficulty Level": "Intermediate",
+    "subject": "DSA"
+  },
+  {
+    "question": "Which search algorithm requires the data to be sorted beforehand?",
+    "options": [
+      "Linear Search",
+      "Depth-First Search",
+      "Breadth-First Search",
+      "Binary Search"
+    ],
+    "correct_answer": "Binary Search",
+    "Difficulty Level": "Intermediate",
+    "subject": "DSA"
+  },
+  {
+    "question": "What is the difference between a complete binary tree and a full binary tree?",
+    "options": [
+      "They are the same",
+      "A complete binary tree has all levels completely filled except possibly the last level and the last level has all keys as left as possible, while a full binary tree has every node other than the leaves with two children.",
+      "A full binary tree has all levels completely filled except possibly the last level and the last level has all keys as left as possible, while a complete binary tree has every node other than the leaves with two children.",
+      "A full binary tree can only store numbers, but a complete binary tree can store other data types."
+    ],
+    "correct_answer": "A complete binary tree has all levels completely filled except possibly the last level and the last level has all keys as left as possible, while a full binary tree has every node other than the leaves with two children.",
+    "Difficulty Level": "Intermediate",
+    "subject": "DSA"
+  },
+  {
+    "question": "Which of the following statements is true about a B-Tree?",
+    "options": [
+      "Each node can have at most two children.",
+      "All leaves are at the same level.",
+      "It is only used for in-memory data.",
+      "It is a type of binary search tree."
+    ],
+    "correct_answer": "All leaves are at the same level.",
+    "Difficulty Level": "Intermediate",
+    "subject": "DSA"
+  },
+  {
+    "question": "Which of the following data structures is most suitable for implementing a Least Recently Used (LRU) cache?",
+    "options": [
+      "Stack",
+      "Queue",
+      "Hash Map with a Doubly Linked List",
+      "Binary Search Tree"
+    ],
+    "correct_answer": "Hash Map with a Doubly Linked List",
+    "Difficulty Level": "Advanced",
+    "subject": "DSA"
+  },
+  {
+    "question": "Given a directed acyclic graph (DAG), which algorithm is best suited to find the longest path between two given nodes?",
+    "options": [
+      "Dijkstra's Algorithm",
+      "Bellman-Ford Algorithm",
+      "Topological Sort with Dynamic Programming",
+      "Depth-First Search"
+    ],
+    "correct_answer": "Topological Sort with Dynamic Programming",
+    "Difficulty Level": "Advanced",
+    "subject": "DSA"
+  },
+  {
+    "question": "Consider a scenario where you need to find the median of a very large stream of numbers in real-time. Which data structure would be most efficient?",
+    "options": [
+      "Sorted Array",
+      "Binary Search Tree",
+      "Heap (Min Heap and Max Heap)",
+      "Linked List"
+    ],
+    "correct_answer": "Heap (Min Heap and Max Heap)",
+    "Difficulty Level": "Advanced",
+    "subject": "DSA"
+  },
+  {
+    "question": "What is the time complexity of the best-known algorithm for multiplying two n x n matrices?",
+    "options": [
+      "O(n^3)",
+      "O(n^2.807)",
+      "O(n^2)",
+      "O(n log n)"
+    ],
+    "correct_answer": "O(n^2.807)",
+    "Difficulty Level": "Advanced",
+    "subject": "DSA"
+  },
+  {
+    "question": "Which of the following sorting algorithms has the best worst-case time complexity and is also stable?",
+    "options": [
+      "Merge Sort",
+      "Quick Sort",
+      "Heap Sort",
+      "Insertion Sort"
+    ],
+    "correct_answer": "Merge Sort",
+    "Difficulty Level": "Advanced",
+    "subject": "DSA"
+  },
+  {
+    "question": "Given a graph represented as an adjacency list, what is the most efficient way to detect if it contains a cycle?",
+    "options": [
+      "Breadth-First Search (BFS)",
+      "Depth-First Search (DFS) with cycle detection",
+      "Dijkstra's Algorithm",
+      "Prim's Algorithm"
+    ],
+    "correct_answer": "Depth-First Search (DFS) with cycle detection",
+    "Difficulty Level": "Advanced",
+    "subject": "DSA"
+  },
+  {
+    "question": "Which of the following algorithms can be used to find the strongly connected components in a directed graph?",
+    "options": [
+      "Dijkstra's Algorithm",
+      "Prim's Algorithm",
+      "Kosaraju's Algorithm",
+      "Kruskal's Algorithm"
+    ],
+    "correct_answer": "Kosaraju's Algorithm",
+    "Difficulty Level": "Advanced",
+    "subject": "DSA"
+  },
+  {
+    "question": "What is the primary advantage of using a B-tree over a Binary Search Tree for disk-based data storage?",
+    "options": [
+      "Lower height for the same number of nodes",
+      "Simpler implementation",
+      "Faster search operations",
+      "Better memory utilization"
+    ],
+    "correct_answer": "Lower height for the same number of nodes",
+    "Difficulty Level": "Advanced",
+    "subject": "DSA"
+  },
+  {
+    "question": "Which data structure is generally preferred for implementing a priority queue that requires frequent updates to element priorities?",
+    "options": [
+      "Array",
+      "Linked List",
+      "Binary Heap",
+      "Fibonacci Heap"
+    ],
+    "correct_answer": "Fibonacci Heap",
+    "Difficulty Level": "Advanced",
+    "subject": "DSA"
+  },
+  {
+    "question": "In dynamic programming, what is the significance of memoization?",
+    "options": [
+      "Reducing space complexity",
+      "Avoiding redundant calculations",
+      "Improving code readability",
+      "Ensuring optimal substructure property"
+    ],
+    "correct_answer": "Avoiding redundant calculations",
+    "Difficulty Level": "Advanced",
+    "subject": "DSA"
+  },
+  {
+    "question": "Which approach is most suitable to solve the 0/1 Knapsack problem with a large number of items but a relatively small knapsack capacity?",
+    "options": [
+      "Greedy Approach",
+      "Dynamic Programming",
+      "Branch and Bound",
+      "Divide and Conquer"
+    ],
+    "correct_answer": "Dynamic Programming",
+    "Difficulty Level": "Advanced",
+    "subject": "DSA"
+  },
+  {
+    "question": "What is the space complexity of the A* search algorithm in the worst case?",
+    "options": [
+      "O(1)",
+      "O(log n)",
+      "O(n)",
+      "O(b^d), where b is the branching factor and d is the depth of the search"
+    ],
+    "correct_answer": "O(b^d), where b is the branching factor and d is the depth of the search",
+    "Difficulty Level": "Advanced",
+    "subject": "DSA"
+  },
+  {
+    "question": "Consider a Bloom filter with 'm' bits and 'k' hash functions. What happens to the false positive rate as 'm' increases?",
+    "options": [
+      "Increases linearly",
+      "Decreases linearly",
+      "Increases exponentially",
+      "Decreases exponentially"
+    ],
+    "correct_answer": "Decreases exponentially",
+    "Difficulty Level": "Advanced",
+    "subject": "DSA"
+  },
+  {
+    "question": "Which of the following graph traversal algorithms guarantees finding the shortest path in an unweighted graph?",
+    "options": [
+      "Depth-First Search (DFS)",
+      "Breadth-First Search (BFS)",
+      "Dijkstra's Algorithm",
+      "A* Search Algorithm"
+    ],
+    "correct_answer": "Breadth-First Search (BFS)",
+    "Difficulty Level": "Advanced",
+    "subject": "DSA"
+  },
+  {
+    "question": "What is the core principle behind the Boyer-Moore string searching algorithm?",
+    "options": [
+      "Comparing characters from left to right",
+      "Comparing characters from right to left and using bad character heuristic and good suffix heuristic",
+      "Using a finite state machine",
+      "Using a hash function to compare substrings"
+    ],
+    "correct_answer": "Comparing characters from right to left and using bad character heuristic and good suffix heuristic",
+    "Difficulty Level": "Advanced",
+    "subject": "DSA"
+  },
+  {
+    "question": "Which of the following techniques can be used to optimize the runtime performance of recursive functions?",
+    "options": [
+      "Tail call optimization",
+      "Loop unrolling",
+      "Register allocation",
+      "Code inlining"
+    ],
+    "correct_answer": "Tail call optimization",
+    "Difficulty Level": "Advanced",
+    "subject": "DSA"
+  },
+  {
+    "question": "What is the primary advantage of using a trie data structure for storing strings?",
+    "options": [
+      "Efficient storage of strings with no common prefixes",
+      "Fast prefix-based searching",
+      "Guaranteed balanced tree structure",
+      "O(1) insertion time"
+    ],
+    "correct_answer": "Fast prefix-based searching",
+    "Difficulty Level": "Advanced",
+    "subject": "DSA"
+  },
+  {
+    "question": "Which concurrency issue is best addressed by using mutexes?",
+    "options": [
+      "Deadlock",
+      "Race condition",
+      "Starvation",
+      "Livelock"
+    ],
+    "correct_answer": "Race condition",
+    "Difficulty Level": "Advanced",
+    "subject": "DSA"
+  },
+  {
+    "question": "What is the space complexity of the Morris traversal algorithm for a binary tree?",
+    "options": [
+      "O(n)",
+      "O(log n)",
+      "O(1)",
+      "O(h) where h is the height of the tree"
+    ],
+    "correct_answer": "O(1)",
+    "Difficulty Level": "Advanced",
+    "subject": "DSA"
+  },
+  {
+    "question": "In the context of distributed systems, what does the CAP theorem state?",
+    "options": [
+      "Consistency, Availability, and Partition Tolerance: Choose any two",
+      "Consistency, Accuracy, and Performance: Choose all three",
+      "Capacity, Availability, and Performance: Choose any two",
+      "Capacity, Accuracy, and Partition Tolerance: Choose all three"
+    ],
+    "correct_answer": "Consistency, Availability, and Partition Tolerance: Choose any two",
+    "Difficulty Level": "Advanced",
+    "subject": "DSA"
+  },
+  {
+    "question": "Which of the following techniques is often used to reduce the space complexity of dynamic programming solutions?",
+    "options": [
+      "Memoization",
+      "Tabulation",
+      "Bitmasking",
+      "Rolling array"
+    ],
+    "correct_answer": "Rolling array",
+    "Difficulty Level": "Advanced",
+    "subject": "DSA"
+  },
+  {
+    "question": "What is the primary advantage of using skip lists over balanced trees (e.g., AVL, Red-Black trees)?",
+    "options": [
+      "Guaranteed logarithmic search time",
+      "Simpler implementation",
+      "Better worst-case performance",
+      "Lower memory overhead"
+    ],
+    "correct_answer": "Simpler implementation",
+    "Difficulty Level": "Advanced",
+    "subject": "DSA"
+  },
+  {
+    "question": "Which of the following algorithm paradigms is used in the Ford-Fulkerson method for solving the maximum flow problem?",
+    "options": [
+      "Greedy approach",
+      "Dynamic programming",
+      "Divide and conquer",
+      "Augmenting path"
+    ],
+    "correct_answer": "Augmenting path",
+    "Difficulty Level": "Advanced",
+    "subject": "DSA"
+  },
+  {
+    "question": "What data structure is commonly used to implement a disjoint set data structure (Union-Find) efficiently?",
+    "options": [
+      "Binary Search Tree",
+      "Linked List",
+      "Array",
+      "Forest of trees"
+    ],
+    "correct_answer": "Forest of trees",
+    "Difficulty Level": "Advanced",
+    "subject": "DSA"
+  },
+  {
+    "question": "In the context of approximation algorithms, what is the approximation ratio of an algorithm A for a minimization problem?",
+    "options": [
+      "The ratio of the optimal solution cost to the solution cost returned by A",
+      "The ratio of the solution cost returned by A to the optimal solution cost",
+      "The difference between the solution cost returned by A and the optimal solution cost",
+      "The sum of the solution cost returned by A and the optimal solution cost"
+    ],
+    "correct_answer": "The ratio of the solution cost returned by A to the optimal solution cost",
+    "Difficulty Level": "Advanced",
+    "subject": "DSA"
+  },
+  {
+    "question": "What is JavaScript primarily used for?",
+    "options": [
+      "Styling web pages",
+      "Adding interactivity to web pages",
+      "Managing databases",
+      "Server-side scripting"
+    ],
+    "correct_answer": "Adding interactivity to web pages",
+    "Difficulty Level": "Beginner",
+    "subject": "JavaScript"
+  },
+  {
+    "question": "Which keyword is used to declare a variable in JavaScript?",
+    "options": [
+      "int",
+      "string",
+      "var",
+      "variable"
+    ],
+    "correct_answer": "var",
+    "Difficulty Level": "Beginner",
+    "subject": "JavaScript"
+  },
+  {
+    "question": "Which of the following is a valid JavaScript data type?",
+    "options": [
+      "float",
+      "character",
+      "boolean",
+      "text"
+    ],
+    "correct_answer": "boolean",
+    "Difficulty Level": "Beginner",
+    "subject": "JavaScript"
+  },
+  {
+    "question": "What is the purpose of the `console.log()` function?",
+    "options": [
+      "To display a popup message",
+      "To write to the browser's console",
+      "To create a new HTML element",
+      "To submit a form"
+    ],
+    "correct_answer": "To write to the browser's console",
+    "Difficulty Level": "Beginner",
+    "subject": "JavaScript"
+  },
+  {
+    "question": "How do you add a comment in JavaScript?",
+    "options": [
+      "<!-- This is a comment -->",
+      "// This is a comment",
+      "/* This is a comment */",
+      "# This is a comment"
+    ],
+    "correct_answer": "// This is a comment",
+    "Difficulty Level": "Beginner",
+    "subject": "JavaScript"
+  },
+  {
+    "question": "What is the result of 5 + '5' in JavaScript?",
+    "options": [
+      "10",
+      "55",
+      "Error",
+      "Undefined"
+    ],
+    "correct_answer": "55",
+    "Difficulty Level": "Beginner",
+    "subject": "JavaScript"
+  },
+  {
+    "question": "Which operator is used for assignment in JavaScript?",
+    "options": [
+      "==",
+      "=",
+      "===",
+      "+="
+    ],
+    "correct_answer": "=",
+    "Difficulty Level": "Beginner",
+    "subject": "JavaScript"
+  },
+  {
+    "question": "What does DOM stand for?",
+    "options": [
+      "Document Object Model",
+      "Data Object Model",
+      "Digital Object Management",
+      "Document Output Model"
+    ],
+    "correct_answer": "Document Object Model",
+    "Difficulty Level": "Beginner",
+    "subject": "JavaScript"
+  },
+  {
+    "question": "How do you refer to an HTML element with the id 'myElement' in JavaScript?",
+    "options": [
+      "getElement(myElement)",
+      "document.getElementById('myElement')",
+      "document.getElementByName('myElement')",
+      "select('myElement')"
+    ],
+    "correct_answer": "document.getElementById('myElement')",
+    "Difficulty Level": "Beginner",
+    "subject": "JavaScript"
+  },
+  {
+    "question": "What is a function in JavaScript?",
+    "options": [
+      "A type of variable",
+      "A reusable block of code",
+      "A way to style HTML",
+      "A database query"
+    ],
+    "correct_answer": "A reusable block of code",
+    "Difficulty Level": "Beginner",
+    "subject": "JavaScript"
+  },
+  {
+    "question": "Which of these is a looping structure in JavaScript?",
+    "options": [
+      "if-else",
+      "switch",
+      "for",
+      "try-catch"
+    ],
+    "correct_answer": "for",
+    "Difficulty Level": "Beginner",
+    "subject": "JavaScript"
+  },
+  {
+    "question": "What does the `===` operator do in JavaScript?",
+    "options": [
+      "Assigns a value",
+      "Checks for equality with type conversion",
+      "Checks for strict equality (value and type)",
+      "Compares two objects"
+    ],
+    "correct_answer": "Checks for strict equality (value and type)",
+    "Difficulty Level": "Beginner",
+    "subject": "JavaScript"
+  },
+  {
+    "question": "What is the `typeof` operator used for?",
+    "options": [
+      "To check if a variable is defined",
+      "To determine the data type of a variable",
+      "To convert a variable to a different type",
+      "To delete a variable"
+    ],
+    "correct_answer": "To determine the data type of a variable",
+    "Difficulty Level": "Beginner",
+    "subject": "JavaScript"
+  },
+  {
+    "question": "What is an array in JavaScript?",
+    "options": [
+      "A single variable",
+      "An object with properties",
+      "An ordered list of values",
+      "A type of function"
+    ],
+    "correct_answer": "An ordered list of values",
+    "Difficulty Level": "Beginner",
+    "subject": "JavaScript"
+  },
+  {
+    "question": "How do you access the first element of an array called 'myArray'?",
+    "options": [
+      "myArray(0)",
+      "myArray[1]",
+      "myArray[0]",
+      "myArray.first"
+    ],
+    "correct_answer": "myArray[0]",
+    "Difficulty Level": "Beginner",
+    "subject": "JavaScript"
+  },
+  {
+    "question": "What is the result of `true && false` in JavaScript?",
+    "options": [
+      "true",
+      "false",
+      "undefined",
+      "null"
+    ],
+    "correct_answer": "false",
+    "Difficulty Level": "Beginner",
+    "subject": "JavaScript"
+  },
+  {
+    "question": "What is the result of `true || false` in JavaScript?",
+    "options": [
+      "true",
+      "false",
+      "undefined",
+      "null"
+    ],
+    "correct_answer": "true",
+    "Difficulty Level": "Beginner",
+    "subject": "JavaScript"
+  },
+  {
+    "question": "What does NaN stand for?",
+    "options": [
+      "Not a Number",
+      "No Application Name",
+      "Null and Not",
+      "New Application Node"
+    ],
+    "correct_answer": "Not a Number",
+    "Difficulty Level": "Beginner",
+    "subject": "JavaScript"
+  },
+  {
+    "question": "Which method adds a new element to the end of an array?",
+    "options": [
+      "shift()",
+      "pop()",
+      "push()",
+      "unshift()"
+    ],
+    "correct_answer": "push()",
+    "Difficulty Level": "Beginner",
+    "subject": "JavaScript"
+  },
+  {
+    "question": "Which method removes the last element from an array?",
+    "options": [
+      "shift()",
+      "pop()",
+      "push()",
+      "unshift()"
+    ],
+    "correct_answer": "pop()",
+    "Difficulty Level": "Beginner",
+    "subject": "JavaScript"
+  },
+  {
+    "question": "What is the use of the `alert()` function in JavaScript?",
+    "options": [
+      "To display an alert box with a message",
+      "To take input from the user",
+      "To print a message to the console",
+      "To reload the webpage"
+    ],
+    "correct_answer": "To display an alert box with a message",
+    "Difficulty Level": "Beginner",
+    "subject": "JavaScript"
+  },
+  {
+    "question": "How do you call a function named 'myFunction' in JavaScript?",
+    "options": [
+      "call myFunction",
+      "myFunction()",
+      "execute myFunction",
+      "run myFunction"
+    ],
+    "correct_answer": "myFunction()",
+    "Difficulty Level": "Beginner",
+    "subject": "JavaScript"
+  },
+  {
+    "question": "What is the purpose of the `if` statement?",
+    "options": [
+      "To define a loop",
+      "To declare a variable",
+      "To execute code based on a condition",
+      "To create a function"
+    ],
+    "correct_answer": "To execute code based on a condition",
+    "Difficulty Level": "Beginner",
+    "subject": "JavaScript"
+  },
+  {
+    "question": "What is the default value of a variable that has been declared but not assigned a value?",
+    "options": [
+      "0",
+      "null",
+      "undefined",
+      "NaN"
+    ],
+    "correct_answer": "undefined",
+    "Difficulty Level": "Beginner",
+    "subject": "JavaScript"
+  },
+  {
+    "question": "Which of the following is NOT a valid way to declare a JavaScript variable?",
+    "options": [
+      "var x = 10;",
+      "let x = 10;",
+      "const x = 10;",
+      "x := 10;"
+    ],
+    "correct_answer": "x := 10;",
+    "Difficulty Level": "Beginner",
+    "subject": "JavaScript"
+  },
+  {
+    "question": "What is the primary use case for the `Proxy` object in JavaScript, beyond simple property interception?",
+    "options": [
+      "To create immutable objects.",
+      "To implement meta-programming concepts like object virtualization and custom object behavior.",
+      "To optimize garbage collection.",
+      "To improve the performance of array operations."
+    ],
+    "correct_answer": "To implement meta-programming concepts like object virtualization and custom object behavior.",
+    "Difficulty Level": "Advanced",
+    "subject": "JavaScript"
+  },
+  {
+    "question": "Consider this code: `async function* generateSequence(start, end) { for (let i = start; i <= end; i++) { await new Promise(resolve => setTimeout(resolve, 100)); yield i; } }  (async () => { for await (let value of generateSequence(1, 3)) { console.log(value); } })();`. What will be the approximate output and timing?",
+    "options": [
+      "Prints 1, 2, 3 immediately.",
+      "Prints 1, 2, 3 with a 100ms delay between each number.",
+      "Prints 1, 2, 3 with a 100ms delay before the first number and then immediately prints the rest.",
+      "Throws an error because async generator functions cannot be used in this way."
+    ],
+    "correct_answer": "Prints 1, 2, 3 with a 100ms delay between each number.",
+    "Difficulty Level": "Advanced",
+    "subject": "JavaScript"
+  },
+  {
+    "question": "What is the purpose of the `WeakRef` object in JavaScript and why is it useful?",
+    "options": [
+      "To create strongly referenced objects that prevent garbage collection.",
+      "To create a weak reference to an object, allowing it to be garbage collected if no other strong references exist, which is useful for caches and avoiding memory leaks.",
+      "To improve the performance of object lookups.",
+      "To provide a mechanism for object cloning."
+    ],
+    "correct_answer": "To create a weak reference to an object, allowing it to be garbage collected if no other strong references exist, which is useful for caches and avoiding memory leaks.",
+    "Difficulty Level": "Advanced",
+    "subject": "JavaScript"
+  },
+  {
+    "question": "Given the following code: `const obj = { a: 1, b: 2 }; const handler = { get(target, prop, receiver) { return Reflect.get(...arguments) * 2; } }; const proxy = new Proxy(obj, handler); console.log(proxy.a);`.  What will be printed to the console?",
+    "options": [
+      "1",
+      "2",
+      "NaN",
+      "Undefined"
+    ],
+    "correct_answer": "2",
+    "Difficulty Level": "Advanced",
+    "subject": "JavaScript"
+  },
+  {
+    "question": "Which statement best describes the differences between `process.nextTick()` and `setImmediate()` in Node.js JavaScript?",
+    "options": [
+      "`process.nextTick()` executes before any I/O events, including timers, while `setImmediate()` executes after the current event loop iteration.",
+      "`setImmediate()` executes before any I/O events, including timers, while `process.nextTick()` executes after the current event loop iteration.",
+      "`process.nextTick()` is deprecated and `setImmediate()` is the preferred method for deferring execution.",
+      "They are functionally equivalent and can be used interchangeably."
+    ],
+    "correct_answer": "`process.nextTick()` executes before any I/O events, including timers, while `setImmediate()` executes after the current event loop iteration.",
+    "Difficulty Level": "Advanced",
+    "subject": "JavaScript"
+  },
+  {
+    "question": "Which of the following is a linear data structure?",
+    "options": [
+      "Tree",
+      "Graph",
+      "Array",
+      "Heap"
+    ],
+    "correct_answer": "Array",
+    "Difficulty Level": "Beginner",
+    "subject": "DSA"
+  },
+  {
+    "question": "What does FIFO stand for in the context of data structures?",
+    "options": [
+      "First In First Out",
+      "Fast Input Fast Output",
+      "Final Input First Output",
+      "First Input Final Output"
+    ],
+    "correct_answer": "First In First Out",
+    "Difficulty Level": "Beginner",
+    "subject": "DSA"
+  },
+  {
+    "question": "Which data structure uses the principle of LIFO?",
+    "options": [
+      "Queue",
+      "Linked List",
+      "Stack",
+      "Binary Tree"
+    ],
+    "correct_answer": "Stack",
+    "Difficulty Level": "Beginner",
+    "subject": "DSA"
+  },
+  {
+    "question": "What is the purpose of an algorithm?",
+    "options": [
+      "To write code faster",
+      "To solve a specific problem",
+      "To store data efficiently",
+      "To design user interfaces"
+    ],
+    "correct_answer": "To solve a specific problem",
+    "Difficulty Level": "Beginner",
+    "subject": "DSA"
+  },
+  {
+    "question": "Which of the following is an example of a searching algorithm?",
+    "options": [
+      "Bubble Sort",
+      "Merge Sort",
+      "Linear Search",
+      "Insertion Sort"
+    ],
+    "correct_answer": "Linear Search",
+    "Difficulty Level": "Beginner",
+    "subject": "DSA"
+  }
+]

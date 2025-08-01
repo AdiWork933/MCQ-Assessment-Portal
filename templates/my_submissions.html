@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Submissions - MCQ Portal</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .header h1 {
+            color: #0056b3;
+            margin: 0;
+        }
+        
+        .submission-card {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .submission-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+        }
+        
+        .submission-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .submission-date {
+            color: #6c757d;
+            font-size: 0.9em;
+        }
+        
+        .submission-score {
+            font-size: 1.2em;
+            font-weight: 600;
+            color: #28a745;
+        }
+        
+        .submission-subject {
+            color: #495057;
+            margin: 10px 0;
+        }
+        
+        .submission-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: background-color 0.2s;
+            border: none;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+        
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #0069d9;
+        }
+        
+        .btn-success {
+            background-color: #28a745;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background-color: #218838;
+        }
+        
+        .no-submissions {
+            text-align: center;
+            padding: 40px 20px;
+            color: #6c757d;
+            font-size: 1.1em;
+        }
+        
+        @media (max-width: 768px) {
+            .submission-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .submission-actions {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>My Submissions</h1>
+            <a href="{{ url_for('index') }}" class="btn btn-primary">Back to Dashboard</a>
+        </div>
+        
+        {% if submissions %}
+            {% for submission in submissions %}
+            <div class="submission-card">
+                <div class="submission-header">
+                    <div class="submission-date">
+                        <i class="fas fa-calendar-alt"></i> {{ submission.formatted_date }}
+                    </div>
+                    <div class="submission-score">
+                        Score: {{ submission.score }}
+                    </div>
+                </div>
+                
+                <div class="submission-subject">
+                    <strong>Subject:</strong> {{ submission.subject }}
+                </div>
+                
+                <div class="submission-actions">
+                    {% if submission.pdf_path %}
+                    <a href="{{ url_for('download_report', filename=submission.pdf_path|basename) }}" class="btn btn-primary">
+                        <i class="fas fa-download"></i> Download Report
+                    </a>
+                    {% else %}
+                    <button class="btn btn-primary" disabled>
+                        <i class="fas fa-download"></i> Report Not Available
+                    </button>
+                    {% endif %}
+                    <a href="{{ url_for('view_submission', submission_id=loop.index0) }}" class="btn btn-success">
+                        <i class="fas fa-eye"></i> View Details
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="no-submissions">
+                <p>You haven't submitted any quizzes yet.</p>
+                <a href="{{ url_for('mcq_generation') }}" class="btn btn-primary">Start a New Quiz</a>
+            </div>
+        {% endif %}
+    </div>
+    
+    <script>
+        // Add any client-side functionality here if needed
+    </script>
+</body>
+</html>
