@@ -1,2 +1,3 @@
-users.json
-submissions.json
+/venv
+.env
+/reports

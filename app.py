@@ -1,10 +1,9 @@
 import os
 import json
-import glob
 from dotenv import load_dotenv
 import google.generativeai as genai
 from fpdf import FPDF
-from flask import Flask, render_template, request, redirect, url_for, session, send_file, flash, jsonify
+from flask import Flask, render_template, request, redirect, url_for, session, send_file, flash
 from werkzeug.security import generate_password_hash, check_password_hash
 from cryptography.fernet import Fernet
 import base64
@@ -12,7 +11,6 @@ import hashlib
 import datetime
 import random
 import string
-from werkzeug.utils import secure_filename
 
 load_dotenv()
 
@@ -42,28 +40,12 @@ app = Flask(__name__)
 app.secret_key = os.getenv("FLASK_SECRET_KEY", "super_secret_key_change_me") # A strong secret key is crucial for session security
 genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 
-# Add custom template filter for basename
-@app.template_filter('basename')
-def basename_filter(path):
-    """Template filter to get the basename of a file path."""
-    return os.path.basename(path)
-
-# Configure upload folder
-UPLOAD_FOLDER = os.path.join('static', 'pdfs')
-ALLOWED_EXTENSIONS = {'pdf'}
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-
-# Create upload folder if it doesn't exist
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-
-def allowed_file(filename):
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
 # Define file paths
 SUBMISSIONS_FILE = "submissions.json"
 USERS_FILE = "users.json"
 QUESTION_BANK_FILE = "question_bank.json" # New file for storing generated questions
+MAIN_EXAM_FILE = "main_exam.json" # Admin-configured main exam
+REPORTS_DIR = "reports"
 
 # -------------- UTILITY FUNCTIONS --------------
 
@@ -116,6 +98,31 @@ def append_questions_to_bank(new_questions):
     existing_questions = load_question_bank()
     existing_questions.extend(new_questions)
     save_questions_to_bank(existing_questions)
+
+
+def load_main_exam():
+    """Load the admin-configured main exam configuration."""
+    if os.path.exists(MAIN_EXAM_FILE):
+        try:
+            with open(MAIN_EXAM_FILE, "r") as f:
+                content = f.read().strip()
+                if content:
+                    data = json.loads(content)
+                    if isinstance(data, dict):
+                        # Normalize expected fields
+                        data.setdefault("active", False)
+                        data.setdefault("duration_minutes", 0)
+                        data.setdefault("questions", [])
+                        return data
+        except json.JSONDecodeError:
+            print(f"Error decoding JSON from {MAIN_EXAM_FILE}. Starting with inactive main exam.")
+    return {"active": False, "duration_minutes": 0, "questions": [], "access": {"mode": "all", "user_ids": []}}
+
+
+def save_main_exam(config):
+    """Persist the main exam configuration to disk."""
+    with open(MAIN_EXAM_FILE, "w") as f:
+        json.dump(config, f, indent=2)
 
 
 def generate_mcqs(subject, level, count):
@@ -250,7 +257,6 @@ def parse_mcqs_from_gemini(raw_json_text):
 def create_pdf_report(submission_data, filename=None):
     """
     Creates a PDF report for a single submission, with Unicode support.
-    Saves the PDF in the static/pdfs directory.
     """
     user_info = submission_data.get('user_info', {})
     answers_data = submission_data.get('answers', [])
@@ -258,15 +264,6 @@ def create_pdf_report(submission_data, filename=None):
     name_cleaned = user_info.get('name', 'candidate').replace(" ", "_").lower()
     if filename is None:
         filename = f"{name_cleaned}_report_{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}.pdf"
-    
-    # Ensure the filename is safe and has .pdf extension
-    filename = secure_filename(filename)
-    if not filename.lower().endswith('.pdf'):
-        filename += '.pdf'
-    
-    # Create the full path in the static/pdfs directory
-    os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
-    filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
 
     total_questions = len(answers_data)
     correct_count = sum(1 for ans_item in answers_data if ans_item.get('is_correct', False))
@@ -349,9 +346,11 @@ def create_pdf_report(submission_data, filename=None):
 
         pdf.ln(5) # Add a small break between question blocks
 
-    # Save the PDF to the static/pdfs directory
-    pdf.output(filepath)
-    return filepath
+    if not os.path.exists(REPORTS_DIR):
+        os.makedirs(REPORTS_DIR)
+    report_path = os.path.join(REPORTS_DIR, filename)
+    pdf.output(report_path)
+    return report_path
 
 def load_submissions():
     """Loads existing submissions from the JSON file."""
@@ -373,16 +372,11 @@ def load_submissions():
     return []
 
 def save_submission(submission_data):
-    """Appends a new submission to the JSON file with username and timestamp."""
-    submissions = load_submissions()
-    # Add username and ensure timestamp is included
-    if 'timestamp' not in submission_data:
-        submission_data['timestamp'] = datetime.datetime.now().isoformat()
-    if 'username' not in submission_data and 'user_info' in submission_data:
-        submission_data['username'] = submission_data['user_info'].get('username', 'anonymous')
-    submissions.append(submission_data)
-    with open(SUBMISSIONS_FILE, 'w') as f:
-        json.dump(submissions, f, indent=2)
+    """Appends a new submission to the JSON file."""
+    all_submissions = load_submissions()
+    all_submissions.append(submission_data)
+    with open(SUBMISSIONS_FILE, "w") as f:
+        json.dump(all_submissions, f, indent=2)
 
 # New: Context processor to inject current_year into all templates
 @app.context_processor
@@ -394,7 +388,6 @@ def inject_current_year():
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
-    unique_id = None
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
@@ -425,8 +418,9 @@ def signup():
             'unique_id': unique_id
         }
         save_users(users)
-        flash('Account created successfully! Please log in. Your Unique ID: {}'.format(unique_id), 'success')
-        return render_template('signup.html', unique_id=unique_id)
+        # Show the unique code on the login page only once via flash
+        flash('Account created successfully! Your Unique ID: {}'.format(unique_id), 'success')
+        return redirect(url_for('login'))
     return render_template('signup.html')
 
 @app.route('/forget_password', methods=['GET', 'POST'])
@@ -513,6 +507,7 @@ def admin_panel():
     questions = load_question_bank()
     total_questions = len(questions)
     total_answers = 0
+    submissions = []
     try:
         with open(SUBMISSIONS_FILE, 'r') as f:
             submissions = json.load(f)
@@ -520,26 +515,69 @@ def admin_panel():
                 total_answers += len(sub.get('answers', []))
     except Exception:
         total_answers = 0
-    
-    # Get list of PDFs
-    pdf_files = []
-    for filename in os.listdir(app.config['UPLOAD_FOLDER']):
-        if filename.endswith('.pdf'):
-            file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-            file_size = os.path.getsize(file_path) / 1024  # Size in KB
-            file_mtime = datetime.datetime.fromtimestamp(os.path.getmtime(file_path))
-            pdf_files.append({
-                'name': filename,
-                'size': f"{file_size:.1f} KB",
-                'uploaded': file_mtime.strftime('%Y-%m-%d %H:%M:%S')
-            })
-    
-    return render_template('admin_panel.html', 
-                         total_users=total_users, 
-                         user_details=user_details, 
-                         total_questions=total_questions, 
-                         total_answers=total_answers,
-                         pdf_files=pdf_files)
+        submissions = []
+
+    # Build enriched submission summaries for admin view
+    submission_rows = []
+    for sub in submissions:
+        user_info = sub.get('user_info', {})
+        answers = sub.get('answers', [])
+        correct = sum(1 for a in answers if a.get('is_correct'))
+        total = len(answers)
+        submission_rows.append({
+            'name': user_info.get('name', 'N/A'),
+            'exam_type': sub.get('exam_type', 'self_exam'),
+            'score': f"{correct}/{total}",
+            'timestamp': sub.get('timestamp', ''),
+            'unique_id': user_info.get('unique_id', ''),
+            'phone': user_info.get('phone', '')
+        })
+
+    # Sort newest first
+    try:
+        submission_rows.sort(key=lambda s: s.get('timestamp', ''), reverse=True)
+    except Exception:
+        pass
+
+    main_exam = load_main_exam()
+    return render_template('admin_panel.html', total_users=total_users, user_details=user_details, total_questions=total_questions, total_answers=total_answers, main_exam_active=main_exam.get('active', False), submission_rows=submission_rows)
+
+
+@app.route('/admin_delete_submission', methods=['POST'])
+def admin_delete_submission():
+    if not session.get('logged_in') or not session.get('is_admin'):
+        flash('Admin access required.', 'danger')
+        return redirect(url_for('login'))
+
+    ts = request.form.get('timestamp', '')
+    exam_type = request.form.get('exam_type', '')
+    name = request.form.get('name', '')
+    phone = request.form.get('phone', '')
+    uid = request.form.get('unique_id', '')
+
+    subs = load_submissions()
+    removed = False
+    new_list = []
+    for s in subs:
+        if removed:
+            new_list.append(s)
+            continue
+        u = s.get('user_info', {})
+        if s.get('timestamp') == ts and s.get('exam_type') == exam_type and (
+            (uid and u.get('unique_id') == uid) or (name and phone and u.get('name') == name and u.get('phone') == phone)
+        ):
+            removed = True
+            continue
+        new_list.append(s)
+
+    with open(SUBMISSIONS_FILE, 'w') as f:
+        json.dump(new_list, f, indent=2)
+
+    if removed:
+        flash('Submission deleted.', 'success')
+    else:
+        flash('Submission not found.', 'warning')
+    return redirect(url_for('admin_panel'))
 
 @app.route('/admin_edit_user/<username>', methods=['GET', 'POST'])
 def admin_edit_user(username):
@@ -567,6 +605,49 @@ def admin_edit_user(username):
     return render_template('admin_edit_user.html', username=username, user=user)
 
 
+@app.route('/admin_delete_user/<username>', methods=['POST'])
+def admin_delete_user(username):
+    if not session.get('logged_in') or not session.get('is_admin'):
+        flash('Admin access required.', 'danger')
+        return redirect(url_for('login'))
+
+    admin_username = os.getenv('ADMIN_USERNAME')
+    if username == admin_username:
+        flash('Cannot delete the admin account.', 'warning')
+        return redirect(url_for('admin_panel'))
+
+    users = load_users()
+    if username not in users:
+        flash('User not found.', 'danger')
+        return redirect(url_for('admin_panel'))
+
+    # Keep unique_id to optionally clean submissions
+    deleted_user = users.pop(username)
+    save_users(users)
+
+    # Optionally remove submissions of this user
+    try:
+        subs = load_submissions()
+        uid = deleted_user.get('unique_id')
+        name = deleted_user.get('name')
+        phone = deleted_user.get('phone')
+        filtered = []
+        for s in subs:
+            u = s.get('user_info', {})
+            if uid and u.get('unique_id') == uid:
+                continue
+            if name and phone and u.get('name') == name and u.get('phone') == phone:
+                continue
+            filtered.append(s)
+        with open(SUBMISSIONS_FILE, 'w') as f:
+            json.dump(filtered, f, indent=2)
+    except Exception:
+        pass
+
+    flash('User deleted successfully.', 'success')
+    return redirect(url_for('admin_panel'))
+
+
 @app.route('/logout')
 def logout():
     session.pop('logged_in', None)
@@ -590,7 +671,20 @@ def login_required(f):
 @app.route('/')
 @login_required
 def index():
-    return render_template('index.html', user_info=session.get('user_info', {}))
+    users = load_users()
+    username = session.get('username')
+    user_record = users.get(username, {}) if username else {}
+    main_exam = load_main_exam()
+    # Access check for button visibility
+    can_access = False
+    if main_exam.get('active'):
+        access = main_exam.get('access', {"mode": "all", "user_ids": []})
+        if access.get('mode') == 'all':
+            can_access = True
+        else:
+            if username and username in access.get('user_ids', []):
+                can_access = True
+    return render_template('index.html', user_info=session.get('user_info', {}), main_exam_active=main_exam.get('active', False), main_exam_attempted=user_record.get('main_exam_attempted', False), main_exam_can_access=can_access)
 
 @app.route('/generate_mcqs', methods=['GET', 'POST'])
 @login_required
@@ -685,24 +779,15 @@ def mcq_answering():
                 "user_info": session['user_info'],
                 "questions_generated": [q['question'] for q in questions],
                 "answers": current_answers,
-                "timestamp": datetime.datetime.now().isoformat()
+                "timestamp": datetime.datetime.now().isoformat(),
+                "exam_type": "self_exam"
             }
 
-            # Add username to submission data
-            full_submission_data['username'] = session.get('username')
-            full_submission_data['subject'] = session.get('subject', 'General')
-            
-            # Save submission first to get the ID
-            save_submission(full_submission_data)
-            
-            # Generate PDF with the submission data
-            pdf_filename = create_pdf_report(full_submission_data)
-            
-            # Update the submission with the PDF path
-            full_submission_data['pdf_path'] = pdf_filename
+            pdf_path = create_pdf_report(full_submission_data)
+            full_submission_data["report_file"] = os.path.basename(pdf_path)
             save_submission(full_submission_data)
 
-            session['last_pdf_path'] = pdf_filename
+            session['last_pdf_path'] = pdf_path
             session['submission_complete'] = True
             session.pop('questions', None)
             session.pop('user_selections', None)
@@ -713,51 +798,281 @@ def mcq_answering():
     return render_template('mcq_answering.html', questions=questions, user_info=session.get('user_info', {}),
                            user_selections=user_selections)
 
+
+# --------- ADMIN: Configure Main Exam ---------
+@app.route('/admin/main_exam', methods=['GET', 'POST'])
+def admin_main_exam():
+    if not session.get('logged_in') or not session.get('is_admin'):
+        flash('Admin access required.', 'danger')
+        return redirect(url_for('login'))
+
+    current_config = load_main_exam()
+
+    if request.method == 'POST':
+        try:
+            duration_minutes = int(request.form.get('duration_minutes', '0'))
+        except ValueError:
+            duration_minutes = 0
+
+        # Option A: Build from question bank using subject/level/count
+        subject = request.form.get('subject', '').strip()
+        level = request.form.get('level', '').strip()
+        try:
+            count = int(request.form.get('count', '0'))
+        except ValueError:
+            count = 0
+
+        questions = []
+        if subject and level and count > 0:
+            try:
+                questions = generate_mcqs(subject, level, count)
+            except Exception as e:
+                print(f"Error generating main exam questions: {e}")
+
+        # Option B: Custom JSON (overrides Option A if provided and valid)
+        custom_json = request.form.get('custom_questions_json', '').strip()
+        if custom_json:
+            try:
+                parsed = json.loads(custom_json)
+                if isinstance(parsed, list):
+                    # Validate minimal schema
+                    valid_list = []
+                    for item in parsed:
+                        if isinstance(item, dict) and all(k in item for k in ["question", "options", "correct_answer"]):
+                            valid_list.append(item)
+                    if valid_list:
+                        questions = valid_list
+            except Exception as e:
+                print(f"Invalid custom questions JSON: {e}")
+
+        active = request.form.get('active') == 'on'
+
+        # Access control: mode all/selected and list of usernames
+        access_mode = request.form.get('access_mode', 'all')
+        # Prefer checkbox selections
+        allowed_usernames = request.form.getlist('allowed_usernames') or []
+        # Fallback: textarea comma-separated list if present
+        if not allowed_usernames:
+            raw_user_list = request.form.get('allowed_users', '').strip()
+            if access_mode == 'selected' and raw_user_list:
+                allowed_usernames = [u.strip() for u in raw_user_list.split(',') if u.strip()]
+
+        # Reset attempts for targeted users
+        # Reset attempts: from checkboxes and/or textarea
+        reset_names = request.form.getlist('reset_usernames') or []
+        reset_field = request.form.get('reset_attempts', '').strip()
+        if reset_field:
+            reset_names += [u.strip() for u in reset_field.split(',') if u.strip()]
+        if reset_names:
+            users = load_users()
+            changed = False
+            for uname in reset_names:
+                if uname in users and users[uname].get('main_exam_attempted'):
+                    users[uname]['main_exam_attempted'] = False
+                    changed = True
+            if changed:
+                save_users(users)
+                flash('Selected users can re-attempt the main exam.', 'success')
+
+        new_config = {
+            'active': active,
+            'duration_minutes': max(0, duration_minutes),
+            'questions': questions or current_config.get('questions', []),
+            'access': {
+                'mode': access_mode,
+                'user_ids': allowed_usernames
+            }
+        }
+        save_main_exam(new_config)
+
+        # If requested, reset attempts for the newly allowed users now
+        if request.form.get('reset_allowed_now') == 'on' and access_mode == 'selected' and allowed_usernames:
+            users = load_users()
+            changed = False
+            for uname in allowed_usernames:
+                if uname in users and users[uname].get('main_exam_attempted'):
+                    users[uname]['main_exam_attempted'] = False
+                    changed = True
+            if changed:
+                save_users(users)
+                flash('Re-attempts enabled for selected users.', 'success')
+        flash('Main exam configuration saved.', 'success')
+        return redirect(url_for('admin_main_exam'))
+
+    # Provide usernames list to help admin
+    users = load_users()
+    all_usernames = sorted(list(users.keys()))
+    return render_template('admin_main_exam.html', config=current_config, all_usernames=all_usernames)
+
+
+# --------- USER: Start and Take Main Exam with Timer ---------
+@app.route('/main_exam/start')
+@login_required
+def main_exam_start():
+    # Load configured exam
+    config = load_main_exam()
+    if not config.get('active'):
+        flash('Main exam is not active.', 'warning')
+        return redirect(url_for('index'))
+
+    # Ensure questions exist
+    questions = config.get('questions', [])
+    if not questions:
+        flash('Main exam has no questions configured.', 'danger')
+        return redirect(url_for('index'))
+
+    # Enforce access control and single attempt per user
+    users = load_users()
+    username = session.get('username')
+    access = config.get('access', {"mode": "all", "user_ids": []})
+    if access.get('mode') == 'selected' and (not username or username not in access.get('user_ids', [])):
+        flash('You are not allowed to take the main exam.', 'danger')
+        return redirect(url_for('index'))
+    if username and users.get(username, {}).get('main_exam_attempted'):
+        flash('You have already attempted the main exam.', 'info')
+        return redirect(url_for('index'))
+
+    # Initialize session for main exam
+    session['main_exam_questions'] = questions
+    session['main_exam_user_selections'] = [None] * len(questions)
+    duration_minutes = int(config.get('duration_minutes', 0) or 0)
+    session['main_exam_end_time'] = (datetime.datetime.utcnow() + datetime.timedelta(minutes=duration_minutes)).isoformat()
+    return redirect(url_for('main_exam'))
+
+
+@app.route('/main_exam', methods=['GET', 'POST'])
+@login_required
+def main_exam():
+    questions = session.get('main_exam_questions')
+    end_time_iso = session.get('main_exam_end_time')
+    if not questions or not end_time_iso:
+        flash('Main exam session not started.', 'warning')
+        return redirect(url_for('index'))
+
+    # Remaining time enforcement
+    try:
+        end_time = datetime.datetime.fromisoformat(end_time_iso)
+    except Exception:
+        end_time = datetime.datetime.utcnow()
+    remaining_seconds = max(0, int((end_time - datetime.datetime.utcnow()).total_seconds()))
+
+    user_selections = session.get('main_exam_user_selections', [None] * len(questions))
+    if len(user_selections) != len(questions):
+        user_selections = [None] * len(questions)
+        session['main_exam_user_selections'] = user_selections
+
+    if request.method == 'POST' or remaining_seconds == 0:
+        current_answers = []
+        all_answered = True
+        new_selections_from_form = [None] * len(questions)
+
+        for i, q_data in enumerate(questions):
+            selected_number = request.form.get(f'q_{i}') if request.method == 'POST' else None
+            options = q_data['options']
+            selected_option = None
+            valid = True
+
+            if selected_number is None or str(selected_number).strip() == '':
+                all_answered = False
+                new_selections_from_form[i] = ''
+                valid = False
+            else:
+                try:
+                    selected_idx = int(selected_number) - 1
+                    if 0 <= selected_idx < len(options):
+                        selected_option = options[selected_idx]
+                        new_selections_from_form[i] = selected_number
+                    else:
+                        all_answered = False
+                        new_selections_from_form[i] = selected_number
+                        valid = False
+                except ValueError:
+                    all_answered = False
+                    new_selections_from_form[i] = selected_number
+                    valid = False
+            
+            # Correctly indented code for each question in the loop
+            is_correct = (selected_option == q_data['correct_answer']) if valid else False
+
+            current_answers.append({
+                "question": q_data['question'],
+                "options": q_data['options'],
+                "user_answer": selected_option if valid else selected_number,
+                "correct_answer": q_data['correct_answer'],
+                "is_correct": is_correct,
+                "answer_number": selected_number
+            })
+
+        session['main_exam_user_selections'] = new_selections_from_form
+
+        # Finalize submission either on manual submit or timeout
+        full_submission_data = {
+            "user_info": session['user_info'],
+            "exam_type": "main_exam",
+            "questions_generated": [q['question'] for q in questions],
+            "answers": current_answers,
+            "timestamp": datetime.datetime.now().isoformat()
+        }
+        pdf_path = create_pdf_report(full_submission_data)
+        full_submission_data["report_file"] = os.path.basename(pdf_path)
+        save_submission(full_submission_data)
+
+        # Mark user as attempted
+        users = load_users()
+        username = session.get('username')
+        if username in users:
+            users[username]['main_exam_attempted'] = True
+            save_users(users)
+
+        # Cleanup and redirect to report
+        session['last_pdf_path'] = pdf_path
+        session['submission_complete'] = True
+        session.pop('main_exam_questions', None)
+        session.pop('main_exam_user_selections', None)
+        session.pop('main_exam_end_time', None)
+        flash('Main exam submitted!', 'success')
+        return redirect(url_for('report_display'))
+
+    return render_template('main_exam.html', questions=questions, user_info=session.get('user_info', {}), user_selections=user_selections, remaining_seconds=remaining_seconds)
+    
 @app.route('/report')
 @login_required
 def report_display():
-    if not session.get('submission_complete'):
-        flash("No submission found to display report.", 'warning')
-        return redirect(url_for('index'))
+    # Show a list of past submissions for the logged-in user
+    username = session.get('username')
+    if not username:
+        flash('Please log in.', 'warning')
+        return redirect(url_for('login'))
 
-    pdf_path = session.get('last_pdf_path')
-    if pdf_path and os.path.exists(pdf_path):
-        filename = os.path.basename(pdf_path)
-    else:
-        filename = None
+    submissions = load_submissions()
+    user_subs = []
+    for sub in submissions:
+        # match by name+phone or unique_id if available
+        u = sub.get('user_info', {})
+        if not u:
+            continue
+        if session.get('user_info', {}).get('unique_id') and u.get('unique_id') == session['user_info']['unique_id']:
+            user_subs.append(sub)
+        elif session.get('user_info', {}).get('name') == u.get('name') and session.get('user_info', {}).get('phone') == u.get('phone'):
+            user_subs.append(sub)
 
-    return render_template('report.html', filename=filename)
+    # Sort newest first
+    try:
+        user_subs.sort(key=lambda s: s.get('timestamp', ''), reverse=True)
+    except Exception:
+        pass
+
+    return render_template('report.html', submissions=user_subs)
 
 @app.route('/download_report/<path:filename>')
 @login_required
 def download_report(filename):
-    """Download a specific report file."""
-    # Check if the file exists in the PDFs directory
-    file_path = os.path.join('static', 'pdfs', filename)
-    if os.path.exists(file_path):
-        return send_file(file_path, as_attachment=True)
+    safe_path = os.path.join(REPORTS_DIR, filename)
+    if os.path.exists(safe_path):
+        return send_file(safe_path, as_attachment=True)
     else:
         flash("Report file not found.", 'danger')
-        return redirect(url_for('my_submissions'))
-
-@app.route('/view_submission/<int:submission_id>')
-@login_required
-def view_submission(submission_id):
-    """View details of a specific submission."""
-    username = session.get('username')
-    all_submissions = load_submissions()
-    
-    # Find the submission by ID and verify ownership
-    if 0 <= submission_id < len(all_submissions):
-        submission = all_submissions[submission_id]
-        if submission.get('username') == username:
-            # Store the PDF path in session for the report display
-            session['last_pdf_path'] = submission.get('pdf_path', '')
-            session['submission_complete'] = True
-            return redirect(url_for('report_display'))
-    
-    flash('Submission not found or access denied.', 'danger')
-    return redirect(url_for('my_submissions'))
+        return redirect(url_for('report_display'))
 
 @app.route('/start_new_quiz')
 @login_required
@@ -769,110 +1084,6 @@ def start_new_quiz():
     flash("You can now start a new quiz.", 'info')
     return redirect(url_for('index'))
 
-@app.route('/admin/upload_pdf', methods=['POST'])
-def upload_pdf():
-    if 'file' not in request.files:
-        return jsonify({'error': 'No file part'}), 400
-    
-    file = request.files['file']
-    if file.filename == '':
-        return jsonify({'error': 'No selected file'}), 400
-    
-    if file and allowed_file(file.filename):
-        filename = secure_filename(file.filename)
-        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-        return jsonify({'message': 'File uploaded successfully'}), 200
-    
-    return jsonify({'error': 'Invalid file type'}), 400
-
-@app.route('/admin/delete_pdf/<filename>')
-def delete_pdf(filename):
-    if not session.get('logged_in') or not session.get('is_admin'):
-        return jsonify({'error': 'Unauthorized'}), 403
-    
-    file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-    if os.path.exists(file_path):
-        os.remove(file_path)
-        return jsonify({'message': 'File deleted successfully'}), 200
-    
-    return jsonify({'error': 'File not found'}), 404
-
-@app.route('/admin/delete_all_pdfs', methods=['POST'])
-def delete_all_pdfs():
-    if not session.get('logged_in') or not session.get('is_admin'):
-        return jsonify({'error': 'Unauthorized'}), 403
-    
-    try:
-        for filename in os.listdir(app.config['UPLOAD_FOLDER']):
-            if filename.endswith('.pdf'):
-                file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-                os.remove(file_path)
-        return jsonify({'message': 'All PDFs deleted successfully'}), 200
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
-@app.route('/admin/download_pdf/<filename>')
-def download_pdf(filename):
-    if not session.get('logged_in') or not session.get('is_admin'):
-        return 'Unauthorized', 403
-    
-    file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-    if os.path.exists(file_path):
-        return send_file(file_path, as_attachment=True)
-    
-    return 'File not found', 404
-
-@app.route('/my_submissions')
-@login_required
-def my_submissions():
-    """Display the current user's submission history."""
-    # Ensure user is logged in
-    if 'username' not in session:
-        flash('Please log in to view your submissions.', 'warning')
-        return redirect(url_for('login'))
-    
-    # Initialize user_info in session if it doesn't exist
-    if 'user_info' not in session:
-        users = load_users()
-        user_data = users.get(session['username'], {})
-        session['user_info'] = {
-            'name': user_data.get('name', ''),
-            'stream': user_data.get('stream', ''),
-            'phone': user_data.get('phone', ''),
-            'unique_id': user_data.get('unique_id', '')
-        }
-    
-    username = session['username']
-    all_submissions = load_submissions()
-    
-    # Filter submissions for the current user
-    user_submissions = []
-    for sub in all_submissions:
-        if sub.get('username') == username:
-            # Calculate score
-            correct_answers = sum(1 for a in sub.get('answers', []) if a.get('is_correct', False))
-            total_questions = len(sub.get('answers', [])) or 1
-            
-            user_submissions.append({
-                'timestamp': sub.get('timestamp'),
-                'score': f"{correct_answers}/{total_questions}",
-                'subject': sub.get('subject', 'General'),
-                'pdf_path': sub.get('pdf_path', '')
-            })
-    
-    # Sort by timestamp, newest first
-    user_submissions.sort(key=lambda x: x.get('timestamp', ''), reverse=True)
-    
-    # Format dates for display
-    for sub in user_submissions:
-        try:
-            dt = datetime.datetime.fromisoformat(sub['timestamp'])
-            sub['formatted_date'] = dt.strftime('%B %d, %Y %I:%M %p')
-        except (ValueError, KeyError):
-            sub['formatted_date'] = 'Unknown date'
-    
-    return render_template('my_submissions.html', submissions=user_submissions)
-
 if __name__ == '__main__':
     # Create necessary files if they don't exist
     if not os.path.exists(USERS_FILE):
@@ -881,11 +1092,22 @@ if __name__ == '__main__':
     if not os.path.exists(SUBMISSIONS_FILE):
         with open(SUBMISSIONS_FILE, 'w') as f:
             json.dump([], f)
+    # Ensure the question bank file exists
     if not os.path.exists(QUESTION_BANK_FILE):
         with open(QUESTION_BANK_FILE, 'w') as f:
-            json.dump([], f)
-    
-    # Create upload folder if it doesn't exist
-    os.makedirs('static/pdfs', exist_ok=True)
-    
+            json.dump([], f) # Initialize as an empty list
+
+    # Ensure main exam file exists
+    if not os.path.exists(MAIN_EXAM_FILE):
+        with open(MAIN_EXAM_FILE, 'w') as f:
+            json.dump({"active": False, "duration_minutes": 0, "questions": []}, f)
+
+    # Create 'fonts' directory if it doesn't exist
+    if not os.path.exists('fonts'):
+        os.makedirs('fonts')
+
+    # Ensure reports directory exists
+    if not os.path.exists(REPORTS_DIR):
+        os.makedirs(REPORTS_DIR)
+
     app.run(debug=True)

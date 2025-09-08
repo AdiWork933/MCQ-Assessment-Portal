@@ -28,18 +28,8 @@
                 <label for="phone">Phone Number:</label>
                 <input type="tel" id="phone" name="phone" value="{{ phone | default('') }}" required>
             </div>
-            <div class="form-group">
-                <label for="unique_id">Unique ID:</label>
-                <input type="text" id="unique_id" name="unique_id" value="{{ unique_id | default('') }}" readonly style="background:#eee;">
-            </div>
             <button type="submit">Sign Up</button>
-            {% if unique_id %}
-            <p class="message">Your Unique ID: <strong>{{ unique_id }}</strong></p>
-            {% endif %}
         </form>
         <p>Already have an account? <a href="{{ url_for('login') }}">Login</a></p>
-        {% if unique_id %}
-        <p class="message">Your Unique ID: <strong>{{ unique_id }}</strong></p>
-        {% endif %}
     </div>
 {% endblock %}

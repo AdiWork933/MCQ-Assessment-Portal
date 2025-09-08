@@ -276,9 +276,16 @@
                 <strong>{{ total_answers }}</strong>
                 Total Answers ✅
             </div>
+            <div class="stat-item">
+                <strong>{{ 'Active' if main_exam_active else 'Inactive' }}</strong>
+                Main Exam Status 📝
+            </div>
         </div>
 
-        <h2>User Details</h2>
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;">
+            <h2>User Details</h2>
+            <a href="{{ url_for('admin_main_exam') }}" class="edit-btn" style="background-color:#007bff;">Manage Main Exam</a>
+        </div>
         <div class="table-container">
             <table class="admin-table">
                 <thead>
@@ -291,6 +298,7 @@
                         <th>Password Hash</th>
                         <th>Decrypted Password <span title="Decrypted using key from .env">🔑</span></th>
                         <th>Edit</th>
+                        <th>Delete</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -304,144 +312,52 @@
                         <td class="password-cell">{{ user.password }}</td>
                         <td class="plain-password-cell" title="Click to copy" onclick="navigator.clipboard.writeText('{{ user.plain_password }}')">{{ user.plain_password }}</td>
                         <td><a href="{{ url_for('admin_edit_user', username=user.username) }}" class="edit-btn">Edit</a></td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <!-- PDF Management Section -->
-    <div class="pdf-management" style="margin-top: 40px;">
-        <h2>PDF Management</h2>
-        
-        <!-- PDF Upload Form -->
-        <div class="upload-container" style="margin-bottom: 20px; padding: 20px; background-color: #f8f9fa; border-radius: 8px; border: 2px dashed #dee2e6;">
-            <h3>Upload PDF</h3>
-            <form id="uploadForm" enctype="multipart/form-data" style="display: flex; gap: 10px; align-items: center;">
-                <input type="file" id="pdfFile" name="file" accept=".pdf" required style="flex-grow: 1; padding: 8px; border: 1px solid #ced4da; border-radius: 4px;">
-                <button type="submit" class="upload-btn" style="background-color: #28a745; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">Upload</button>
-            </form>
-            <div id="uploadStatus" style="margin-top: 10px; font-size: 0.9em;"></div>
-        </div>
-
-        <!-- PDF List -->
-        <div class="table-container">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                <h3>Uploaded PDFs</h3>
-                <button id="deleteAllPdfs" class="delete-btn" style="background-color: #dc3545; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer;">
-                    Delete All PDFs
-                </button>
-            </div>
-            
-            {% if pdf_files %}
-            <table class="admin-table">
-                <thead>
-                    <tr>
-                        <th>Filename</th>
-                        <th>Size</th>
-                        <th>Uploaded</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for pdf in pdf_files %}
-                    <tr>
-                        <td>{{ pdf.name }}</td>
-                        <td>{{ pdf.size }}</td>
-                        <td>{{ pdf.uploaded }}</td>
                         <td>
-                            <a href="{{ url_for('download_pdf', filename=pdf.name) }}" class="action-btn" style="background-color: #17a2b8; color: white; padding: 4px 8px; border-radius: 4px; margin-right: 5px; text-decoration: none;">Download</a>
-                            <button onclick="deletePdf('{{ pdf.name }}')" class="delete-btn" style="background-color: #dc3545; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer;">Delete</button>
+                            <form method="POST" action="{{ url_for('admin_delete_user', username=user.username) }}" onsubmit="return confirm('Delete user {{ user.username }}? This will also remove their submissions.');">
+                                <button type="submit" class="logout-button" style="padding:6px 12px;">Delete</button>
+                            </form>
                         </td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
-            {% else %}
-            <p>No PDFs have been uploaded yet.</p>
-            {% endif %}
         </div>
     </div>
-
-    <script>
-        // Handle PDF upload
-        document.getElementById('uploadForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const formData = new FormData();
-            const fileInput = document.getElementById('pdfFile');
-            const statusDiv = document.getElementById('uploadStatus');
-            
-            formData.append('file', fileInput.files[0]);
-            
-            try {
-                statusDiv.textContent = 'Uploading...';
-                statusDiv.style.color = '#17a2b8';
-                
-                const response = await fetch('/admin/upload_pdf', {
-                    method: 'POST',
-                    body: formData
-                });
-                
-                const result = await response.json();
-                
-                if (response.ok) {
-                    statusDiv.textContent = 'Upload successful! Refreshing...';
-                    statusDiv.style.color = '#28a745';
-                    setTimeout(() => window.location.reload(), 1000);
-                } else {
-                    throw new Error(result.error || 'Upload failed');
-                }
-            } catch (error) {
-                statusDiv.textContent = 'Error: ' + error.message;
-                statusDiv.style.color = '#dc3545';
-            }
-        });
-        
-        // Delete single PDF
-        async function deletePdf(filename) {
-            if (!confirm(`Are you sure you want to delete ${filename}?`)) {
-                return;
-            }
-            
-            try {
-                const response = await fetch(`/admin/delete_pdf/${encodeURIComponent(filename)}`);
-                const result = await response.json();
-                
-                if (response.ok) {
-                    alert('PDF deleted successfully');
-                    window.location.reload();
-                } else {
-                    throw new Error(result.error || 'Delete failed');
-                }
-            } catch (error) {
-                alert('Error: ' + error.message);
-            }
-        }
-        
-        // Delete all PDFs
-        document.getElementById('deleteAllPdfs').addEventListener('click', async function() {
-            if (!confirm('Are you sure you want to delete ALL PDFs? This action cannot be undone.')) {
-                return;
-            }
-            
-            try {
-                const response = await fetch('/admin/delete_all_pdfs', {
-                    method: 'POST'
-                });
-                const result = await response.json();
-                
-                if (response.ok) {
-                    alert('All PDFs have been deleted');
-                    window.location.reload();
-                } else {
-                    throw new Error(result.error || 'Delete all failed');
-                }
-            } catch (error) {
-                alert('Error: ' + error.message);
-            }
-        });
-    </script>
+    <div class="admin-panel-container">
+        <h2>Recent Submissions</h2>
+        <div class="table-container">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Student</th>
+                        <th>Exam Type</th>
+                        <th>Score</th>
+                        <th>Submitted At</th>
+                        <th>Delete</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in submission_rows %}
+                    <tr>
+                        <td>{{ row.name }}</td>
+                        <td>{{ row.exam_type }}</td>
+                        <td>{{ row.score }}</td>
+                        <td>{{ row.timestamp }}</td>
+                        <td>
+                            <form method="POST" action="{{ url_for('admin_delete_submission') }}" onsubmit="return confirm('Delete this submission by ' + '{{ row.name }}' + '?');">
+                                <input type="hidden" name="timestamp" value="{{ row.timestamp }}">
+                                <input type="hidden" name="exam_type" value="{{ row.exam_type }}">
+                                <input type="hidden" name="name" value="{{ row.name }}">
+                                <input type="hidden" name="phone" value="{{ row.phone }}">
+                                <input type="hidden" name="unique_id" value="{{ row.unique_id }}">
+                                <button type="submit" class="logout-button" style="padding:6px 12px;">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
 </body>
 </html>
