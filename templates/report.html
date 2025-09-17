@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}My Reports{% endblock %}
+
+{% block content %}
+    <div class="report-section">
+        <h2>Your Past Reports</h2>
+        {% if submissions and submissions|length > 0 %}
+            <table class="admin-table" style="margin-top:10px;">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Exam Type</th>
+                        <th>Submitted At</th>
+                        <th>Questions</th>
+                        <th>Download</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for sub in submissions %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ sub.exam_type|default('self_exam') }}</td>
+                        <td>{{ sub.timestamp }}</td>
+                        <td>{{ sub.answers|length }}</td>
+                        <td>
+                            {% if sub.report_file %}
+                                <a class="button" href="{{ url_for('download_report', filename=sub.report_file) }}">PDF</a>
+                            {% else %}
+                                N/A
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p class="no-report-message">No reports yet. Take a quiz to generate your first report.</p>
+            <a href="{{ url_for('mcq_generation') }}" class="button">Generate New MCQs</a>
+        {% endif %}
+    </div>
+{% endblock %}

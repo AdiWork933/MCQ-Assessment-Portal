@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+    <div class="welcome-section">
+        <h2>Welcome, {{ user_info.name | default(session.get('username', 'Guest')) }}!</h2>
+        {% if user_info.unique_id %}
+        <p class="unique-id">Your Unique ID: <strong>{{ user_info.unique_id }}</strong></p>
+        {% endif %}
+        <p>Your journey to master MCQs begins here.</p>
+        <p>You can generate new quizzes, answer questions, and view your detailed reports.</p>
+        <div class="action-buttons">
+            <a href="{{ url_for('mcq_generation') }}" class="button">Generate New MCQs</a>
+            <a href="{{ url_for('report_display') }}" class="button">View My Reports</a>
+            {% if main_exam_active and main_exam_can_access and not main_exam_attempted %}
+            <a href="{{ url_for('main_exam_start') }}" class="button" style="background:#28a745;">Main Exam</a>
+            {% elif main_exam_active and main_exam_attempted %}
+            <span class="button" style="background:#6c757d;cursor:not-allowed;">Main Exam Attempted</span>
+            {% elif main_exam_active and not main_exam_can_access %}
+            <span class="button" style="background:#6c757d;cursor:not-allowed;">Main Exam (Not Allowed)</span>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

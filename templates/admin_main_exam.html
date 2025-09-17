@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+
+{% block title %}Admin: Main Exam{% endblock %}
+
+{% block content %}
+<style>
+    /* Hide global navbar only on Configure Main Exam page */
+    .navbar { display: none; }
+</style>
+<div class="auth-form">
+    <h2>Configure Main Exam</h2>
+    <p style="margin-top:-6px; margin-bottom:16px;"><a href="{{ url_for('admin_panel') }}" class="edit-btn" style="background-color:#007bff;">← Back to Admin Panel</a></p>
+    <form method="POST" action="{{ url_for('admin_main_exam') }}">
+        <div class="form-group">
+            <label for="duration_minutes">Duration (minutes)</label>
+            <input type="number" min="0" id="duration_minutes" name="duration_minutes" value="{{ config.duration_minutes }}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="penalty_per_step">Penalty per 3 warnings (marks)</label>
+            <input type="number" min="0" id="penalty_per_step" name="penalty_per_step" value="{{ (config.penalty_per_step or 0) if config and config.penalty_per_step is defined else 0 }}" placeholder="0 = no penalty">
+            <small>Set to 0 to disable penalty. If set to N, each 3 warnings deducts N marks.</small>
+        </div>
+
+        <div class="form-group">
+            <label>Who can take the exam?</label>
+            <div>
+                <label><input type="radio" name="access_mode" value="all" {% if not config.access or config.access.mode == 'all' %}checked{% endif %}> All students</label>
+                <label style="margin-left:12px;"><input type="radio" name="access_mode" value="selected" {% if config.access and config.access.mode == 'selected' %}checked{% endif %}> Selected students only</label>
+            </div>
+            <div id="user-checkboxes" style="margin-top:8px; display:none; max-height:200px; overflow:auto; border:1px solid #e0e0e0; padding:8px; border-radius:6px;" data-initial-mode="{% if config.access and config.access.mode == 'selected' %}selected{% else %}all{% endif %}">
+                {% for uname in all_usernames %}
+                <label style="display:inline-block; min-width:220px; margin:4px 10px 4px 0;">
+                    <input type="checkbox" name="allowed_usernames" value="{{ uname }}" {% if config.access and uname in config.access.user_ids %}checked{% endif %}>
+                    {{ uname }}
+                </label>
+                {% endfor %}
+            </div>
+            <textarea name="allowed_users" rows="3" placeholder="Comma-separated usernames" style="margin-top:6px; display:none;">{{ config.access.user_ids | join(', ') if config.access and config.access.user_ids }}</textarea>
+        </div>
+
+        <div class="form-group">
+            <label>Build from Question Bank</label>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                <input type="text" name="subject" placeholder="Subject">
+                <select name="level">
+                    <option value="">Level</option>
+                    <option>Beginner</option>
+                    <option>Intermediate</option>
+                    <option>Advanced</option>
+                </select>
+                <input type="number" name="count" min="1" placeholder="Count">
+            </div>
+            <small>If you also provide Custom Questions JSON below, it will override these.</small>
+        </div>
+
+        <div class="form-group">
+            <label for="custom_questions_json">Custom Questions JSON (optional)</label>
+            <textarea id="custom_questions_json" name="custom_questions_json" rows="8" placeholder='[
+  {"question":"...","options":["A","B","C","D"],"correct_answer":"A"}
+]'></textarea>
+        </div>
+
+        <div class="form-group">
+            <label>Allow Re-attempts</label>
+            <p class="small-text">Tick users below to reset their main exam attempt status and allow them to retake the exam.</p>
+            <div style="max-height:300px; overflow:auto; border:1px solid #e0e0e0; padding:8px; border-radius:6px;">
+                <table style="width:100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="background-color: #f5f5f5;">
+                            <th style="text-align:left; padding:8px;">Username</th>
+                            <th style="text-align:center; padding:8px;">Attempted</th>
+                            <th style="text-align:center; padding:8px;">Reset Attempt</th>
+                            <th style="text-align:center; padding:8px;">Allow Retake</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for uname in all_usernames %}
+                        {% set user = users[uname] %}
+                        <tr style="border-top:1px solid #eee;">
+                            <td style="padding:8px;">{{ uname }}</td>
+                            <td style="text-align:center; padding:8px;">
+                                {% if user.get('main_exam_attempted') %}
+                                    <span style="color:red;">✓</span>
+                                {% else %}
+                                    <span style="color:#ccc;">-</span>
+                                {% endif %}
+                            </td>
+                            <td style="text-align:center; padding:8px;">
+                                <input type="checkbox" name="reset_usernames" value="{{ uname }}">
+                            </td>
+                            <td style="text-align:center; padding:8px;">
+                                {% if user.get('allow_retake') %}
+                                    <span style="color:green;">Allowed</span>
+                                {% endif %}
+                                <input type="checkbox" name="allow_retake" value="{{ uname }}" {% if user.get('allow_retake') %}checked{% endif %}>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <p class="small-text">Or enter usernames (comma-separated):</p>
+            <input type="text" name="reset_attempts" placeholder="usernames" style="width:100%;">
+        </div>
+
+        <div class="form-group">
+            <label><input type="checkbox" name="active" {% if config.active %}checked{% endif %}> Active</label>
+        </div>
+
+        <button type="submit">Save</button>
+    </form>
+
+    <h3>Preview ({{ config.questions|length }} questions)</h3>
+    <ol>
+        {% for q in config.questions %}
+        <li>
+            <div><strong>{{ q.question }}</strong></div>
+            <ul>
+                {% for opt in q.options %}
+                <li>{{ loop.index }}. {{ opt }}{% if opt == q.correct_answer %} ✅{% endif %}</li>
+                {% endfor %}
+            </ul>
+        </li>
+        {% endfor %}
+    </ol>
+</div>
+<script>
+    (function(){
+        var modeAll = document.querySelector('input[name="access_mode"][value="all"]');
+        var modeSel = document.querySelector('input[name="access_mode"][value="selected"]');
+        var box = document.getElementById('user-checkboxes');
+        function sync(){
+            var selected = modeSel && modeSel.checked;
+            if(selected){
+                box.style.display = 'block';
+            } else {
+                box.style.display = 'none';
+            }
+        }
+        // initial from data
+        if(box && box.getAttribute('data-initial-mode') === 'selected'){
+            if(modeSel) modeSel.checked = true;
+        }
+        sync();
+        if(modeAll) modeAll.addEventListener('change', sync);
+        if(modeSel) modeSel.addEventListener('change', sync);
+    })();
+</script>
+{% endblock %}
+

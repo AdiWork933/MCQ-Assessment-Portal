@@ -1,0 +1,199 @@
+{% extends "base.html" %}
+
+{% block title %}Main Exam{% endblock %}
+
+{% block content %}
+<div class="quiz-container">
+    <h2>Main Exam</h2>
+    <div class="timer" id="timer" style="display:flex;align-items:center;gap:8px;font-weight:700;color:#0056b3;">
+        <span>Time Left:</span>
+        <span id="time-left" style="font-variant-numeric: tabular-nums; background:#e9f5ff; padding:4px 8px; border-radius:6px; border:1px solid #cfe6ff;">--:--</span>
+    </div>
+    <div id="warning-banner" style="display:none; margin:12px 0; padding:10px 12px; border-radius:8px; border:1px solid #ffeeba; background:#fff8e1; color:#7a5b00; font-weight:600;">
+        Warning: Please don't switch tabs or windows during the exam. (<span id="warning-count">0</span>)
+    </div>
+
+    <form method="POST" action="{{ url_for('main_exam') }}">
+        <input type="hidden" name="warnings_count" id="warnings_count" value="0">
+        {% for question in questions %}
+        <div class="question-card enhanced-question-box">
+            <div class="question-header">
+                <span class="question-number">Q{{ loop.index }}</span>
+            </div>
+            <div class="question-text">{{ question.question }}</div>
+            <div class="options-list modern-options-list">
+                {% set question_index = loop.index0 %}
+                {% for option in question.options %}
+                <div class="modern-option" onclick="selectOption({{ question_index }}, {{ loop.index }})" data-question-index="{{ question_index }}" data-option-number="{{ loop.index }}" style="cursor: pointer;">
+                    <span class="option-label">{{ loop.index }}.</span> <span class="option-text">{{ option }}</span>
+                </div>
+                {% endfor %}
+            </div>
+            <div class="answer-input-group">
+                <label for="q_{{ loop.index0 }}_answer" class="answer-label">Your Answer (Enter option number):</label>
+                <input type="number" name="q_{{ loop.index0 }}" id="q_{{ loop.index0 }}_answer" min="1" max="{{ question.options|length }}" placeholder="1-{{ question.options|length }}" value="{{ user_selections[loop.index0] if user_selections is defined and user_selections[loop.index0] is defined else '' }}" required class="modern-answer-input" inputmode="numeric">
+            </div>
+        </div>
+        {% endfor %}
+
+        <button type="submit" class="button">Submit</button>
+    </form>
+</div>
+
+<script>
+    (function(){
+        var remaining = {{ remaining_seconds|int }};
+        var display = document.getElementById('time-left');
+        var timerEl = document.getElementById('timer');
+        var formSubmitted = false;
+        
+        function format(s) {
+            var m = Math.floor(s/60);
+            var r = s%60;
+            return String(m).padStart(2,'0') + ':' + String(r).padStart(2,'0');
+        }
+        
+        function showTimeWarning() {
+            if (remaining <= 30) {
+                // Change color to red when less than 30 seconds
+                display.style.color = '#ff4444';
+                display.style.fontWeight = 'bold';
+                
+                // Add shake animation for last 10 seconds
+                if (remaining <= 10) {
+                    display.style.animation = 'shake 0.5s infinite';
+                }
+                
+                // Show warning message at specific intervals
+                if (remaining === 30 || remaining === 15 || remaining === 5) {
+                    alert('Warning: Only ' + remaining + ' seconds remaining!');
+                }
+            }
+        }
+        
+        function submitForm() {
+            if (!formSubmitted) {
+                formSubmitted = true;
+                // Disable all inputs to prevent further changes
+                document.querySelectorAll('input[type="number"]').forEach(function(input) {
+                    input.disabled = true;
+                });
+                // Show submitting message
+                display.textContent = 'Submitting...';
+                // Submit the form
+                document.querySelector('form').submit();
+            }
+        }
+        
+        function tick() {
+            display.textContent = format(remaining);
+            showTimeWarning();
+            
+            if (remaining <= 0) {
+                submitForm();
+                return;
+            }
+            
+            remaining -= 1;
+            setTimeout(tick, 1000);
+        }
+        
+        // Add styles for animations
+        var style = document.createElement('style');
+        style.textContent = `
+            @keyframes pulse {
+                0% { transform: scale(1); }
+                50% { transform: scale(1.03); }
+                100% { transform: scale(1); }
+            }
+            @keyframes shake {
+                0% { transform: translateX(0); }
+                25% { transform: translateX(-2px); }
+                50% { transform: translateX(2px); }
+                75% { transform: translateX(-2px); }
+                100% { transform: translateX(0); }
+            }
+            .time-warning {
+                color: #ff4444;
+                font-weight: bold;
+                animation: pulse 1s infinite;
+            }
+        `;
+        document.head.appendChild(style);
+        
+        // Start the timer
+        tick();
+        
+        // Add beforeunload handler to prevent accidental navigation
+        window.addEventListener('beforeunload', function(e) {
+            if (remaining > 0 && !formSubmitted) {
+                e.preventDefault();
+                e.returnValue = 'Your exam is still in progress. Are you sure you want to leave?';
+                return e.returnValue;
+            }
+        });
+        
+        // Add form submission handler to prevent double submission
+        document.querySelector('form').addEventListener('submit', function(e) {
+            if (formSubmitted) {
+                e.preventDefault();
+                return false;
+            }
+            formSubmitted = true;
+            return true;
+        });
+    })();
+</script>
+<script>
+    function selectOption(questionIndex, optionNumber) {
+        const input = document.getElementById('q_' + questionIndex + '_answer');
+        if (input) {
+            input.value = optionNumber;
+        }
+    }
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.modern-option').forEach(item => {
+            item.addEventListener('click', event => {
+                const questionIndex = event.currentTarget.dataset.questionIndex;
+                const optionNumber = event.currentTarget.dataset.optionNumber;
+                const answerInput = document.getElementById('q_' + questionIndex + '_answer');
+                if (answerInput) {
+                    answerInput.value = optionNumber;
+                }
+            });
+        });
+    });
+</script>
+<script>
+    // Anti-cheat: track tab/window switches and warn, count to hidden input (debounced)
+    (function(){
+        var warnings = 0;
+        var banner = document.getElementById('warning-banner');
+        var wCount = document.getElementById('warning-count');
+        var hidden = document.getElementById('warnings_count');
+        var lastIncAt = 0; // ms
+        var MIN_INTERVAL = 1500; // debounce to avoid double counting from blur+visibilitychange
+        function registerWarning(){
+            warnings += 1;
+            if(wCount) wCount.textContent = warnings;
+            if(hidden) hidden.value = warnings;
+            if(banner) banner.style.display = 'block';
+        }
+        // visibility change (count only when becoming hidden)
+        document.addEventListener('visibilitychange', function(){
+            var now = Date.now();
+            if(document.hidden && (now - lastIncAt) > MIN_INTERVAL){
+                registerWarning();
+                lastIncAt = now;
+                alert('Warning: Do not switch tabs/windows during the exam.');
+            }
+        });
+        // before unload - no warning increment, but prevent accidental close
+        window.addEventListener('beforeunload', function(e){
+            e.preventDefault();
+            e.returnValue = '';
+        });
+    })();
+</script>
+{% endblock %}
+
