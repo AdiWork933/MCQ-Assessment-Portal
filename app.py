@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import os
 import json
 from dotenv import load_dotenv
@@ -268,6 +267,16 @@ def create_pdf_report(submission_data, filename=None):
 
     total_questions = len(answers_data)
     correct_count = sum(1 for ans_item in answers_data if ans_item.get('is_correct', False))
+    warnings_count = int(submission_data.get('warnings_count', 0) or 0)
+    # Load configured penalty per 3 warnings from main exam config
+    try:
+        main_exam_cfg = load_main_exam()
+        penalty_per_step = int(main_exam_cfg.get('penalty_per_step', 0) or 0)
+    except Exception:
+        penalty_per_step = 0
+    penalty_steps = max(0, warnings_count // 3)
+    penalty_marks = penalty_per_step * penalty_steps
+    final_correct = max(0, correct_count - penalty_marks)
 
     pdf = FPDF()
     pdf.add_page()
@@ -307,8 +316,11 @@ def create_pdf_report(submission_data, filename=None):
     pdf.cell(0, 10, txt="Results Summary:", ln=True)
     pdf.set_font("DejaVu", '', 12) # Regular
     pdf.cell(0, 7, txt=f"Total Questions: {total_questions}", ln=True)
-    pdf.cell(0, 7, txt=f"Correct Answers: {correct_count}", ln=True)
-    pdf.cell(0, 7, txt=f"Score: {correct_count}/{total_questions}", ln=True)
+    pdf.cell(0, 7, txt=f"Correct Answers (Raw): {correct_count}", ln=True)
+    pdf.cell(0, 7, txt=f"Warnings: {warnings_count}", ln=True)
+    if penalty_marks > 0:
+        pdf.cell(0, 7, txt=f"Penalty Applied: -{penalty_marks} (5 marks per 3 warnings)", ln=True)
+    pdf.cell(0, 7, txt=f"Final Score: {final_correct}/{total_questions}", ln=True)
     pdf.ln(10)
 
     # Detailed Answers
@@ -858,22 +870,40 @@ def admin_main_exam():
             if access_mode == 'selected' and raw_user_list:
                 allowed_usernames = [u.strip() for u in raw_user_list.split(',') if u.strip()]
 
-        # Reset attempts for targeted users
-        # Reset attempts: from checkboxes and/or textarea
+        # Handle user-specific settings
+        users = load_users()
+        changed = False
+        
+        # Process reset attempts
         reset_names = request.form.getlist('reset_usernames') or []
         reset_field = request.form.get('reset_attempts', '').strip()
         if reset_field:
             reset_names += [u.strip() for u in reset_field.split(',') if u.strip()]
-        if reset_names:
-            users = load_users()
-            changed = False
-            for uname in reset_names:
-                if uname in users and users[uname].get('main_exam_attempted'):
-                    users[uname]['main_exam_attempted'] = False
-                    changed = True
-            if changed:
-                save_users(users)
-                flash('Selected users can re-attempt the main exam.', 'success')
+        
+        # Process allow_retake checkboxes
+        allow_retake_users = request.form.getlist('allow_retake') or []
+        
+        # Update user settings
+        for uname in users:
+            user_changed = False
+            
+            # Handle reset attempts
+            if uname in reset_names and users[uname].get('main_exam_attempted'):
+                users[uname]['main_exam_attempted'] = False
+                user_changed = True
+            
+            # Handle allow_retake
+            new_retake_status = uname in allow_retake_users
+            if users[uname].get('allow_retake') != new_retake_status:
+                users[uname]['allow_retake'] = new_retake_status
+                user_changed = True
+                
+            if user_changed:
+                changed = True
+        
+        if changed:
+            save_users(users)
+            flash('User settings updated successfully.', 'success')
 
         new_config = {
             'active': active,
@@ -882,7 +912,8 @@ def admin_main_exam():
             'access': {
                 'mode': access_mode,
                 'user_ids': allowed_usernames
-            }
+            },
+            'penalty_per_step': int(request.form.get('penalty_per_step', current_config.get('penalty_per_step', 0) or 0))
         }
         save_main_exam(new_config)
 
@@ -900,10 +931,13 @@ def admin_main_exam():
         flash('Main exam configuration saved.', 'success')
         return redirect(url_for('admin_main_exam'))
 
-    # Provide usernames list to help admin
+    # Prepare data for the template
     users = load_users()
     all_usernames = sorted(list(users.keys()))
-    return render_template('admin_main_exam.html', config=current_config, all_usernames=all_usernames)
+    return render_template('admin_main_exam.html', 
+                         config=current_config, 
+                         all_usernames=all_usernames,
+                         users=users)
 
 
 # --------- USER: Start and Take Main Exam with Timer ---------
@@ -922,47 +956,175 @@ def main_exam_start():
         flash('Main exam has no questions configured.', 'danger')
         return redirect(url_for('index'))
 
-    # Enforce access control and single attempt per user
+    # Enforce access control and exam attempt limits
     users = load_users()
     username = session.get('username')
+    user = users.get(username, {})
+    
+    # Check access control
     access = config.get('access', {"mode": "all", "user_ids": []})
     if access.get('mode') == 'selected' and (not username or username not in access.get('user_ids', [])):
         flash('You are not allowed to take the main exam.', 'danger')
         return redirect(url_for('index'))
-    if username and users.get(username, {}).get('main_exam_attempted'):
+    
+    # Check if user has already attempted and doesn't have retake permission
+    if user.get('main_exam_attempted') and not user.get('allow_retake'):
         flash('You have already attempted the main exam.', 'info')
         return redirect(url_for('index'))
+    
+    # If user has allow_retake but hasn't started the retake yet, reset their attempt status
+    if user.get('allow_retake'):
+        user['main_exam_attempted'] = False
+        user['allow_retake'] = False  # Reset the flag after allowing one retake
+        save_users(users)
+        flash('You have been granted permission to retake the exam. Good luck!', 'success')
 
-    # Initialize session for main exam
+    # Initialize/Reset session for main exam
     session['main_exam_questions'] = questions
     session['main_exam_user_selections'] = [None] * len(questions)
     duration_minutes = int(config.get('duration_minutes', 0) or 0)
     session['main_exam_end_time'] = (datetime.datetime.utcnow() + datetime.timedelta(minutes=duration_minutes)).isoformat()
+    
+    # Clear any previous submission complete flag
+    if 'submission_complete' in session:
+        session.pop('submission_complete')
+        
     return redirect(url_for('main_exam'))
 
 
-@app.route('/main_exam', methods=['GET', 'POST'])
-@login_required
-def main_exam():
-    questions = session.get('main_exam_questions')
-    end_time_iso = session.get('main_exam_end_time')
-    if not questions or not end_time_iso:
-        flash('Main exam session not started.', 'warning')
-        return redirect(url_for('index'))
-
-    # Remaining time enforcement
+def process_exam_submission(questions, end_time_iso, force_submit=False):
+    """Helper function to process exam submission and handle all the logic."""
     try:
         end_time = datetime.datetime.fromisoformat(end_time_iso)
     except Exception:
         end_time = datetime.datetime.utcnow()
-    remaining_seconds = max(0, int((end_time - datetime.datetime.utcnow()).total_seconds()))
+    
+    remaining_seconds = int((end_time - datetime.datetime.utcnow()).total_seconds())
+    
+    # If not forcing submission and time is up, redirect to submit
+    if not force_submit and remaining_seconds > 0 and request.method == 'GET':
+        return redirect(url_for('main_exam'))
+    
+    current_answers = []
+    new_selections_from_form = [None] * len(questions)
+    
+    for i, q_data in enumerate(questions):
+        selected_number = request.form.get(f'q_{i}', '').strip() if request.method == 'POST' else ''
+        options = q_data['options']
+        selected_option = None
+        valid = True
+        
+        if not selected_number:
+            # If time is up, treat unanswered questions as empty
+            if force_submit:
+                selected_number = ''
+                valid = False
+            else:
+                flash('Please answer all questions before submitting.', 'warning')
+                return redirect(url_for('main_exam'))
+        
+        try:
+            selected_idx = int(selected_number) - 1
+            if 0 <= selected_idx < len(options):
+                selected_option = options[selected_idx]
+                new_selections_from_form[i] = selected_number
+            else:
+                valid = False
+        except ValueError:
+            valid = False
+        
+        is_correct = (selected_option == q_data['correct_answer']) if valid else False
+        
+        current_answers.append({
+            "question": q_data['question'],
+            "options": q_data['options'],
+            "user_answer": selected_option if valid else selected_number,
+            "correct_answer": q_data['correct_answer'],
+            "is_correct": is_correct,
+            "answer_number": selected_number
+        })
+    
+    # Get warning count from form
+    try:
+        warnings_count = int(request.form.get('warnings_count', '0'))
+    except Exception:
+        warnings_count = 0
+    
+    # Prepare submission data
+    full_submission_data = {
+        "user_info": session['user_info'],
+        "exam_type": "main_exam",
+        "questions_generated": [q['question'] for q in questions],
+        "answers": current_answers,
+        "timestamp": datetime.datetime.now().isoformat(),
+        "warnings_count": warnings_count,
+        "auto_submitted": force_submit
+    }
+    
+    # Generate and save report
+    pdf_path = create_pdf_report(full_submission_data)
+    full_submission_data["report_file"] = os.path.basename(pdf_path)
+    save_submission(full_submission_data)
+    
+    # Mark user as attempted
+    users = load_users()
+    username = session.get('username')
+    if username in users:
+        users[username]['main_exam_attempted'] = True
+        save_users(users)
+    
+    # Cleanup session
+    session['last_pdf_path'] = pdf_path
+    session['submission_complete'] = True
+    session.pop('main_exam_questions', None)
+    session.pop('main_exam_user_selections', None)
+    session.pop('main_exam_end_time', None)
+    
+    if force_submit:
+        flash('Time is up! Your exam has been automatically submitted.', 'warning')
+    else:
+        flash('Exam submitted successfully!', 'success')
+    
+    return redirect(url_for('report_display'))
 
+@app.route('/main_exam', methods=['GET', 'POST'])
+@login_required
+def main_exam():
+    # Check if exam session is valid
+    questions = session.get('main_exam_questions')
+    end_time_iso = session.get('main_exam_end_time')
+    
+    if not questions or not end_time_iso:
+        flash('Main exam session not started or has expired.', 'warning')
+        return redirect(url_for('index'))
+
+    # Calculate remaining time
+    try:
+        end_time = datetime.datetime.fromisoformat(end_time_iso)
+    except Exception:
+        end_time = datetime.datetime.utcnow()
+    
+    remaining_seconds = int((end_time - datetime.datetime.utcnow()).total_seconds())
+    
+    # Check if exam has already been submitted
+    if 'submission_complete' in session and session['submission_complete']:
+        flash('Your exam has already been submitted.', 'info')
+        return redirect(url_for('report_display'))
+    
+    # If time is up, force submission
+    if remaining_seconds <= 0:
+        return process_exam_submission(questions, end_time_iso, force_submit=True)
+    
+    remaining_seconds = max(0, remaining_seconds)  # Ensure it's not negative
+
+    # Initialize or update user selections
     user_selections = session.get('main_exam_user_selections', [None] * len(questions))
     if len(user_selections) != len(questions):
         user_selections = [None] * len(questions)
         session['main_exam_user_selections'] = user_selections
 
-    if request.method == 'POST' or remaining_seconds == 0:
+    # Handle form submission
+    if request.method == 'POST':
         current_answers = []
         all_answered = True
         new_selections_from_form = [None] * len(questions)
@@ -1006,23 +1168,33 @@ def main_exam():
 
         session['main_exam_user_selections'] = new_selections_from_form
 
+        # Cheating/Warning counter from client
+        try:
+            warnings_count = int(request.form.get('warnings_count', '0'))
+        except Exception:
+            warnings_count = 0
+
         # Finalize submission either on manual submit or timeout
         full_submission_data = {
             "user_info": session['user_info'],
             "exam_type": "main_exam",
             "questions_generated": [q['question'] for q in questions],
             "answers": current_answers,
-            "timestamp": datetime.datetime.now().isoformat()
+            "timestamp": datetime.datetime.now().isoformat(),
+            "warnings_count": warnings_count
         }
         pdf_path = create_pdf_report(full_submission_data)
         full_submission_data["report_file"] = os.path.basename(pdf_path)
         save_submission(full_submission_data)
 
-        # Mark user as attempted
+        # Mark user as attempted and clear any retake flags
         users = load_users()
         username = session.get('username')
         if username in users:
             users[username]['main_exam_attempted'] = True
+            # Clear any retake flags when exam is submitted
+            if 'allow_retake' in users[username]:
+                users[username]['allow_retake'] = False
             save_users(users)
 
         # Cleanup and redirect to report
@@ -1110,360 +1282,5 @@ if __name__ == '__main__':
     # Ensure reports directory exists
     if not os.path.exists(REPORTS_DIR):
         os.makedirs(REPORTS_DIR)
-
-    app.run(debug=True)
-=======
-# Required Library
-import os
-import streamlit as st
-import json
-from dotenv import load_dotenv
-import google.generativeai as genai
-from fpdf import FPDF
-
-load_dotenv()
-genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
-
-# Define the JSON file path for submissions
-SUBMISSIONS_FILE = "submissions.json"
-
-# -------------- UTILITY FUNCTIONS --------------
-
-def generate_mcqs(subject, level, count):
-    """
-    Generates multiple-choice questions using the Gemini API.
-
-    Args:
-        subject (str): The subject for the MCQs.
-        level (str): The difficulty level of the MCQs.
-        count (int): The number of MCQs to generate.
-
-    Returns:
-        str: The raw text response from the Gemini model.
-    """
-    prompt = f"""
-    Generate {count} multiple choice questions (MCQs) for the subject '{subject}' at the '{level}' difficulty level.
-    Provide 4 options for each question and indicate the correct answer clearly.
-
-    Format:
-    Q: Question text
-    Options: [A] option1 [B] option2 [C] option3 [D] option4
-    Answer: B
-    """
-    model = genai.GenerativeModel(model_name="models/gemini-2.0-flash")
-    try:
-        response = model.generate_content(prompt)
-        return response.text
-    except Exception as e:
-        st.error(f"Error generating questions: {e}")
-        return ""
-
-def parse_mcqs(raw_text):
-    """
-    Parses the raw text response from the Gemini model into a structured list of questions.
-
-    Args:
-        raw_text (str): The raw text containing MCQs.
-
-    Returns:
-        list: A list of tuples, where each tuple contains (question, options_list, correct_answer_text).
-    """
-    lines = raw_text.splitlines()
-    questions = []
-    q, opts, ans = None, [], None
-    for line in lines:
-        line = line.strip() # Strip whitespace from the line
-        if line.startswith("Q:"):
-            # If a previous question was incomplete, reset
-            if q and opts:
-                st.warning(f"Skipping incomplete question data: Q='{q}', Options='{opts}'")
-            q = line[2:].strip()
-            opts = []
-            ans = None
-        elif line.startswith("Options:"):
-            # Extract options from the "Options:" line
-            options_str = line[8:].strip()
-            # Split by common delimiters like '[A]', '[B]', etc., while keeping the option text
-            temp_opts = [o.strip() for o in options_str.split('[') if o.strip()]
-            opts = []
-            for item in temp_opts:
-                if ']' in item:
-                    # Extract the option text after the bracket, e.g., 'A] option' -> 'option'
-                    opts.append(item.split(']', 1)[1].strip())
-        elif line.startswith("Answer:"):
-            ans_letter = line.split(":")[-1].strip().upper()
-            correct_index = {"A": 0, "B": 1, "C": 2, "D": 3}.get(ans_letter, None)
-            
-            # Ensure all parts are valid before adding the question
-            if q and opts and correct_index is not None and 0 <= correct_index < len(opts):
-                questions.append((q, opts, opts[correct_index])) # Store question, all options, and correct answer text
-            else:
-                st.warning(f"Failed to parse question: Q='{q}', Options='{opts}', Answer Letter='{ans_letter}'")
-            # Reset for the next question
-            q, opts, ans = None, [], None
-    return questions
-
-def create_pdf_report(submission_data, filename=None):
-    """
-    Creates a PDF report for a single submission.
-
-    Args:
-        submission_data (dict): A dictionary containing 'user_info' and 'answers' for one submission.
-        filename (str, optional): The desired filename for the PDF. Defaults to None.
-
-    Returns:
-        str: The path to the generated PDF file.
-    """
-    user_info = submission_data.get('user_info', {})
-    answers_data = submission_data.get('answers', [])
-
-    name_cleaned = user_info.get('name', 'candidate').replace(" ", "_").lower()
-    if filename is None:
-        filename = f"{name_cleaned}_report.pdf" # Removed date as requested
-
-    # Calculate score
-    total_questions = len(answers_data)
-    correct_count = sum(1 for ans_item in answers_data if ans_item.get('is_correct', False))
-
-    pdf = FPDF()
-    pdf.add_page()
-    pdf.set_font("Arial", size=12)
-
-    # Report Card Header
-    pdf.set_font("Arial", 'B', 16)
-    pdf.cell(0, 10, txt="MCQ Submission Report", ln=True, align="C")
-    pdf.ln(5)
-
-    # Candidate Information
-    pdf.set_font("Arial", 'B', 12)
-    pdf.cell(0, 10, txt="Candidate Information:", ln=True)
-    pdf.set_font("Arial", '', 12)
-    pdf.cell(0, 7, txt=f"Name: {user_info.get('name', 'N/A')}", ln=True)
-    pdf.cell(0, 7, txt=f"Stream: {user_info.get('stream', 'N/A')}", ln=True)
-    pdf.cell(0, 7, txt=f"Phone: {user_info.get('phone', 'N/A')}", ln=True)
-    pdf.ln(5)
-
-    # Summary
-    pdf.set_font("Arial", 'B', 12)
-    pdf.cell(0, 10, txt="Results Summary:", ln=True)
-    pdf.set_font("Arial", '', 12)
-    pdf.cell(0, 7, txt=f"Total Questions: {total_questions}", ln=True)
-    pdf.cell(0, 7, txt=f"Correct Answers: {correct_count}", ln=True)
-    pdf.cell(0, 7, txt=f"Score: {correct_count}/{total_questions}", ln=True)
-    pdf.ln(10)
-
-    # Detailed Answers
-    pdf.set_font("Arial", 'B', 14)
-    pdf.cell(0, 10, txt="Detailed Answers:", ln=True)
-    pdf.set_font("Arial", '', 10) # Smaller font for details
-
-    for idx, ans_item in enumerate(answers_data, 1):
-        question_text = ans_item.get('question', 'N/A')
-        user_answer = ans_item.get('user_answer', 'Not answered')
-        correct_answer = ans_item.get('correct_answer', 'N/A')
-        is_correct = ans_item.get('is_correct', False)
-
-        result_text = "Correct" if is_correct else "Incorrect"
-        result_color = (0, 128, 0) if is_correct else (255, 0, 0) # Green for correct, Red for incorrect
-
-        # Removed 'ln=True' from multi_cell calls
-        pdf.set_fill_color(240, 240, 240) # Light grey background for each question block
-        pdf.multi_cell(0, 7, f"Q{idx}: {question_text}", border=1, align='L', fill=True)
-        pdf.multi_cell(0, 7, f"Your Answer: {user_answer}", border=1, align='L', fill=True)
-        pdf.multi_cell(0, 7, f"Correct Answer: {correct_answer}", border=1, align='L', fill=True)
-        pdf.set_text_color(*result_color) # Apply color
-        pdf.multi_cell(0, 7, f"Result: {result_text}", border=1, align='L', fill=True)
-        pdf.set_text_color(0, 0, 0) # Reset color to black
-        pdf.ln(5) # Add a small break between questions
-
-    pdf.output(filename)
-    return filename
-
-def load_submissions():
-    """Loads existing submissions from the JSON file."""
-    if os.path.exists(SUBMISSIONS_FILE):
-        try:
-            with open(SUBMISSIONS_FILE, "r") as f:
-                content = f.read().strip()
-                if content: # Check if file is not empty
-                    data = json.loads(content)
-                    if isinstance(data, list):
-                        return data
-                    else: # If it's a single object, convert it to a list
-                        return [data]
-                else:
-                    return [] # File is empty
-        except json.JSONDecodeError:
-            st.error("Error decoding JSON file. Starting with an empty list.")
-            return []
-    return []
-
-def save_submission(submission_data):
-    """Appends a new submission to the JSON file."""
-    all_submissions = load_submissions()
-    all_submissions.append(submission_data)
-    with open(SUBMISSIONS_FILE, "w") as f:
-        json.dump(all_submissions, f, indent=2)
-
-# ----------------- UI -----------------
-
-def main():
-    st.set_page_config(page_title="MCQ Portal", layout="centered")
-    st.title("📚 Gemini-based MCQ Submission Portal")
-
-    # Initialize session state for navigation
-    if 'page' not in st.session_state:
-        st.session_state.page = 'user_info_entry'
-    if 'user_info' not in st.session_state:
-        st.session_state.user_info = {"name": "", "stream": "", "phone": ""}
-    if 'questions' not in st.session_state:
-        st.session_state.questions = []
-    if 'answers_submitted' not in st.session_state:
-        st.session_state.answers_submitted = False
-
-    # --- Page 1: User Information Entry ---
-    if st.session_state.page == 'user_info_entry':
-        st.subheader("Enter Candidate Information:")
-        
-        # Pre-fill inputs if data exists in session state
-        name = st.text_input("Name", value=st.session_state.user_info.get('name', ''))
-        stream = st.text_input("Stream", value=st.session_state.user_info.get('stream', ''))
-        phone = st.text_input("Phone Number", value=st.session_state.user_info.get('phone', ''))
-
-        if st.button("Save Candidate Info & Proceed to MCQs"):
-            if not name or not stream or not phone:
-                st.warning("Please fill in all candidate details.")
-            else:
-                st.session_state.user_info = {"name": name, "stream": stream, "phone": phone}
-                st.session_state.page = 'mcq_generation'
-                st.rerun() # Rerun to switch to the next page
-
-    # --- Page 2: MCQ Generation ---
-    if st.session_state.page == 'mcq_generation':
-        st.subheader("Generate MCQs")
-
-        st.write(f"Candidate: **{st.session_state.user_info['name']}**")
-        subject = st.text_input("Enter Subject", key="subject_gen")
-        level = st.selectbox("Select Difficulty Level", ["Simple", "Intermediate", "Hard", "Fire"], key="level_gen")
-        count = st.slider("Number of MCQs", 1, 10, 3, key="count_gen")
-
-        if st.button("Generate MCQs"):
-            if not subject:
-                st.warning("Please enter a subject to generate questions.")
-            else:
-                with st.spinner("Generating questions from Gemini..."):
-                    raw = generate_mcqs(subject, level, count)
-                    questions = parse_mcqs(raw)
-                    if questions:
-                        st.session_state.questions = questions
-                        # Reset user_selections here to match the new number of questions
-                        st.session_state.user_selections = [None] * len(questions) 
-                        st.session_state.answers_submitted = False # Reset submission status
-                        st.session_state.page = 'mcq_answering' # Move to answering page
-                        st.rerun()
-                    else:
-                        st.error("Failed to generate valid MCQs. Try again.")
-
-    # --- Page 3: MCQ Answering ---
-    if st.session_state.page == 'mcq_answering' and st.session_state.questions:
-        st.subheader("Answer the following questions:")
-        st.write(f"Candidate: **{st.session_state.user_info['name']}**")
-
-        current_answers = []
-        # Ensure user_selections is correctly sized for the current questions
-        if len(st.session_state.user_selections) != len(st.session_state.questions):
-            st.session_state.user_selections = [None] * len(st.session_state.questions)
-
-        for i, (question_text, options_list, correct_answer_text) in enumerate(st.session_state.questions):
-            st.write(f"**Q{i+1}: {question_text}**")
-            
-            # Create a unique key for each radio button group
-            radio_key = f"ans_{i}"
-            
-            # Use a dummy first option to ensure nothing is selected by default and user has to actively choose
-            options_for_radio = ["-- Select an option --"] + options_list
-            
-            # Get current selection for this question, or default to the placeholder
-            current_selection_value = st.session_state.user_selections[i]
-            
-            # Find the index of the current_selection_value in options_for_radio
-            try:
-                default_index = options_for_radio.index(current_selection_value)
-            except ValueError:
-                default_index = 0 # Default to '-- Select an option --' if not found
-
-            selected_option = st.radio(
-                "Choose an option:",
-                options_for_radio,
-                index=default_index,
-                key=radio_key
-            )
-            
-            # Update user_selections in session state
-            if selected_option != "-- Select an option --":
-                st.session_state.user_selections[i] = selected_option
-            else:
-                st.session_state.user_selections[i] = None
-
-            # Prepare data for submission
-            is_correct = (selected_option == correct_answer_text)
-            current_answers.append({
-                "question": question_text,
-                "options": options_list,
-                "user_answer": selected_option if selected_option != "-- Select an option --" else None,
-                "correct_answer": correct_answer_text,
-                "is_correct": is_correct if selected_option != "-- Select an option --" else False # Mark as false if not answered
-            })
-
-        if st.button("Submit Answers"):
-            # Check if all questions have been answered (not just the placeholder)
-            if any(ans["user_answer"] is None for ans in current_answers):
-                st.warning("Please answer all questions before submitting.")
-            else:
-                with st.spinner("Processing your submission..."):
-                    # Compile all data for the current submission
-                    full_submission_data = {
-                        "user_info": st.session_state.user_info,
-                        "questions_generated": [q[0] for q in st.session_state.questions], # Store just the questions text
-                        "answers": current_answers
-                    }
-                    
-                    save_submission(full_submission_data) # Append to JSON
-                    pdf_path = create_pdf_report(full_submission_data) # Create PDF for this submission
-
-                    st.success("Your answers have been submitted and saved!")
-                    with open(pdf_path, "rb") as f:
-                        st.download_button("📄 Download Report Card", f, file_name=pdf_path, mime="application/pdf")
-                    
-                    st.session_state.answers_submitted = True
-                    st.session_state.page = 'report_display' # Move to report display page
-                    st.session_state.last_pdf_path = pdf_path # Store path for immediate download
-                    st.rerun() # Rerun to show report section
-
-    # --- Page 4: Report Display (after submission) ---
-    if st.session_state.page == 'report_display' and st.session_state.answers_submitted:
-        st.subheader("Submission Complete!")
-        st.success("Your report card has been generated and saved.")
-        
-        # Provide download button again if page reloads without showing it
-        if st.session_state.get('last_pdf_path') and os.path.exists(st.session_state.last_pdf_path):
-             with open(st.session_state.last_pdf_path, "rb") as f:
-                st.download_button("📄 Download Report Card Again", f, file_name=os.path.basename(st.session_state.last_pdf_path), mime="application/pdf")
-
-        st.markdown("---")
-        st.write("You can now:")
-        if st.button("Start a New Quiz"):
-            # Reset relevant session states for a new quiz
-            st.session_state.page = 'user_info_entry'
-            st.session_state.questions = []
-            st.session_state.answers_submitted = False
-            st.session_state.user_selections = []
-            st.session_state.user_info = {"name": "", "stream": "", "phone": ""} # Clear user info for a fresh start
-            st.rerun()
-
-        # You can optionally display the last submitted answers or a summary here
-        # For brevity, this example just provides the download and restart button.
-
-if __name__ == "__main__":
-    main()
->>>>>>> 1a0500553106d9bb8aa2dbca6bdeac2a82a764b2
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host='0.0.0.0', port=port)
