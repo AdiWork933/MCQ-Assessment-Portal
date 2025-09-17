@@ -44,6 +44,8 @@ header {
     gap: 25px; /* Space between nav items */
 }
 
+/* removed nav-toggle for reverted layout */
+
 .navbar li {
     margin: 0; /* Reset default margins */
 }
