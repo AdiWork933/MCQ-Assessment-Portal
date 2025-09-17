@@ -9,3 +9,4 @@ fpdf2
 Werkzeug
 cryptography
 gunicorn
+phonenumbers
