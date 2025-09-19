@@ -11,8 +11,6 @@ import hashlib
 import datetime
 import random
 import string
-import phonenumbers
-from phonenumbers.phonenumberutil import NumberParseException
 
 load_dotenv()
 
@@ -46,8 +44,6 @@ genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 SUBMISSIONS_FILE = "submissions.json"
 USERS_FILE = "users.json"
 QUESTION_BANK_FILE = "question_bank.json" # New file for storing generated questions
-MAIN_EXAM_FILE = "main_exam.json" # Admin-configured main exam
-REPORTS_DIR = "reports"
 
 # -------------- UTILITY FUNCTIONS --------------
 
@@ -100,31 +96,6 @@ def append_questions_to_bank(new_questions):
     existing_questions = load_question_bank()
     existing_questions.extend(new_questions)
     save_questions_to_bank(existing_questions)
-
-
-def load_main_exam():
-    """Load the admin-configured main exam configuration."""
-    if os.path.exists(MAIN_EXAM_FILE):
-        try:
-            with open(MAIN_EXAM_FILE, "r") as f:
-                content = f.read().strip()
-                if content:
-                    data = json.loads(content)
-                    if isinstance(data, dict):
-                        # Normalize expected fields
-                        data.setdefault("active", False)
-                        data.setdefault("duration_minutes", 0)
-                        data.setdefault("questions", [])
-                        return data
-        except json.JSONDecodeError:
-            print(f"Error decoding JSON from {MAIN_EXAM_FILE}. Starting with inactive main exam.")
-    return {"active": False, "duration_minutes": 0, "questions": [], "access": {"mode": "all", "user_ids": []}}
-
-
-def save_main_exam(config):
-    """Persist the main exam configuration to disk."""
-    with open(MAIN_EXAM_FILE, "w") as f:
-        json.dump(config, f, indent=2)
 
 
 def generate_mcqs(subject, level, count):
@@ -269,16 +240,6 @@ def create_pdf_report(submission_data, filename=None):
 
     total_questions = len(answers_data)
     correct_count = sum(1 for ans_item in answers_data if ans_item.get('is_correct', False))
-    warnings_count = int(submission_data.get('warnings_count', 0) or 0)
-    # Load configured penalty per 3 warnings from main exam config
-    try:
-        main_exam_cfg = load_main_exam()
-        penalty_per_step = int(main_exam_cfg.get('penalty_per_step', 0) or 0)
-    except Exception:
-        penalty_per_step = 0
-    penalty_steps = max(0, warnings_count // 3)
-    penalty_marks = penalty_per_step * penalty_steps
-    final_correct = max(0, correct_count - penalty_marks)
 
     pdf = FPDF()
     pdf.add_page()
@@ -318,11 +279,8 @@ def create_pdf_report(submission_data, filename=None):
     pdf.cell(0, 10, txt="Results Summary:", ln=True)
     pdf.set_font("DejaVu", '', 12) # Regular
     pdf.cell(0, 7, txt=f"Total Questions: {total_questions}", ln=True)
-    pdf.cell(0, 7, txt=f"Correct Answers (Raw): {correct_count}", ln=True)
-    pdf.cell(0, 7, txt=f"Warnings: {warnings_count}", ln=True)
-    if penalty_marks > 0:
-        pdf.cell(0, 7, txt=f"Penalty Applied: -{penalty_marks} (5 marks per 3 warnings)", ln=True)
-    pdf.cell(0, 7, txt=f"Final Score: {final_correct}/{total_questions}", ln=True)
+    pdf.cell(0, 7, txt=f"Correct Answers: {correct_count}", ln=True)
+    pdf.cell(0, 7, txt=f"Score: {correct_count}/{total_questions}", ln=True)
     pdf.ln(10)
 
     # Detailed Answers
@@ -361,11 +319,8 @@ def create_pdf_report(submission_data, filename=None):
 
         pdf.ln(5) # Add a small break between question blocks
 
-    if not os.path.exists(REPORTS_DIR):
-        os.makedirs(REPORTS_DIR)
-    report_path = os.path.join(REPORTS_DIR, filename)
-    pdf.output(report_path)
-    return report_path
+    pdf.output(filename)
+    return filename
 
 def load_submissions():
     """Loads existing submissions from the JSON file."""
@@ -403,6 +358,7 @@ def inject_current_year():
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
+    unique_id = None
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
@@ -410,24 +366,9 @@ def signup():
         stream = request.form['stream']
         phone = request.form['phone']
 
-        # Validate phone number
-        try:
-            parsed_number = phonenumbers.parse(phone, None)
-            if not phonenumbers.is_valid_number(parsed_number):
-                flash('Invalid phone number. Please enter a valid phone number with country code (e.g., +91XXXXXXXXXX)', 'danger')
-                return render_template('signup.html', username=username, name=name, stream=stream, phone=phone)
-        except NumberParseException as e:
-            flash('Invalid phone number format. Please include country code (e.g., +91 for India)', 'danger')
-            return render_template('signup.html', username=username, name=name, stream=stream, phone=phone)
-
         users = load_users()
         if username in users:
             flash('Username already exists. Please choose a different one.', 'danger')
-            return render_template('signup.html', username=username, name=name, stream=stream, phone=phone)
-
-        # Check if phone number is already registered
-        if any(user.get('phone') == phone for user in users.values()):
-            flash('This phone number is already registered. Please use a different number or log in.', 'danger')
             return render_template('signup.html', username=username, name=name, stream=stream, phone=phone)
 
         def generate_unique_id(existing_ids):
@@ -448,9 +389,8 @@ def signup():
             'unique_id': unique_id
         }
         save_users(users)
-        # Show the unique code on the login page only once via flash
-        flash('Account created successfully! Your Unique ID: {}'.format(unique_id), 'success')
-        return redirect(url_for('login'))
+        flash('Account created successfully! Please log in. Your Unique ID: {}'.format(unique_id), 'success')
+        return render_template('signup.html', unique_id=unique_id)
     return render_template('signup.html')
 
 @app.route('/forget_password', methods=['GET', 'POST'])
@@ -537,7 +477,6 @@ def admin_panel():
     questions = load_question_bank()
     total_questions = len(questions)
     total_answers = 0
-    submissions = []
     try:
         with open(SUBMISSIONS_FILE, 'r') as f:
             submissions = json.load(f)
@@ -545,69 +484,7 @@ def admin_panel():
                 total_answers += len(sub.get('answers', []))
     except Exception:
         total_answers = 0
-        submissions = []
-
-    # Build enriched submission summaries for admin view
-    submission_rows = []
-    for sub in submissions:
-        user_info = sub.get('user_info', {})
-        answers = sub.get('answers', [])
-        correct = sum(1 for a in answers if a.get('is_correct'))
-        total = len(answers)
-        submission_rows.append({
-            'name': user_info.get('name', 'N/A'),
-            'exam_type': sub.get('exam_type', 'self_exam'),
-            'score': f"{correct}/{total}",
-            'timestamp': sub.get('timestamp', ''),
-            'unique_id': user_info.get('unique_id', ''),
-            'phone': user_info.get('phone', '')
-        })
-
-    # Sort newest first
-    try:
-        submission_rows.sort(key=lambda s: s.get('timestamp', ''), reverse=True)
-    except Exception:
-        pass
-
-    main_exam = load_main_exam()
-    return render_template('admin_panel.html', total_users=total_users, user_details=user_details, total_questions=total_questions, total_answers=total_answers, main_exam_active=main_exam.get('active', False), submission_rows=submission_rows)
-
-
-@app.route('/admin_delete_submission', methods=['POST'])
-def admin_delete_submission():
-    if not session.get('logged_in') or not session.get('is_admin'):
-        flash('Admin access required.', 'danger')
-        return redirect(url_for('login'))
-
-    ts = request.form.get('timestamp', '')
-    exam_type = request.form.get('exam_type', '')
-    name = request.form.get('name', '')
-    phone = request.form.get('phone', '')
-    uid = request.form.get('unique_id', '')
-
-    subs = load_submissions()
-    removed = False
-    new_list = []
-    for s in subs:
-        if removed:
-            new_list.append(s)
-            continue
-        u = s.get('user_info', {})
-        if s.get('timestamp') == ts and s.get('exam_type') == exam_type and (
-            (uid and u.get('unique_id') == uid) or (name and phone and u.get('name') == name and u.get('phone') == phone)
-        ):
-            removed = True
-            continue
-        new_list.append(s)
-
-    with open(SUBMISSIONS_FILE, 'w') as f:
-        json.dump(new_list, f, indent=2)
-
-    if removed:
-        flash('Submission deleted.', 'success')
-    else:
-        flash('Submission not found.', 'warning')
-    return redirect(url_for('admin_panel'))
+    return render_template('admin_panel.html', total_users=total_users, user_details=user_details, total_questions=total_questions, total_answers=total_answers)
 
 @app.route('/admin_edit_user/<username>', methods=['GET', 'POST'])
 def admin_edit_user(username):
@@ -635,49 +512,6 @@ def admin_edit_user(username):
     return render_template('admin_edit_user.html', username=username, user=user)
 
 
-@app.route('/admin_delete_user/<username>', methods=['POST'])
-def admin_delete_user(username):
-    if not session.get('logged_in') or not session.get('is_admin'):
-        flash('Admin access required.', 'danger')
-        return redirect(url_for('login'))
-
-    admin_username = os.getenv('ADMIN_USERNAME')
-    if username == admin_username:
-        flash('Cannot delete the admin account.', 'warning')
-        return redirect(url_for('admin_panel'))
-
-    users = load_users()
-    if username not in users:
-        flash('User not found.', 'danger')
-        return redirect(url_for('admin_panel'))
-
-    # Keep unique_id to optionally clean submissions
-    deleted_user = users.pop(username)
-    save_users(users)
-
-    # Optionally remove submissions of this user
-    try:
-        subs = load_submissions()
-        uid = deleted_user.get('unique_id')
-        name = deleted_user.get('name')
-        phone = deleted_user.get('phone')
-        filtered = []
-        for s in subs:
-            u = s.get('user_info', {})
-            if uid and u.get('unique_id') == uid:
-                continue
-            if name and phone and u.get('name') == name and u.get('phone') == phone:
-                continue
-            filtered.append(s)
-        with open(SUBMISSIONS_FILE, 'w') as f:
-            json.dump(filtered, f, indent=2)
-    except Exception:
-        pass
-
-    flash('User deleted successfully.', 'success')
-    return redirect(url_for('admin_panel'))
-
-
 @app.route('/logout')
 def logout():
     session.pop('logged_in', None)
@@ -701,20 +535,7 @@ def login_required(f):
 @app.route('/')
 @login_required
 def index():
-    users = load_users()
-    username = session.get('username')
-    user_record = users.get(username, {}) if username else {}
-    main_exam = load_main_exam()
-    # Access check for button visibility
-    can_access = False
-    if main_exam.get('active'):
-        access = main_exam.get('access', {"mode": "all", "user_ids": []})
-        if access.get('mode') == 'all':
-            can_access = True
-        else:
-            if username and username in access.get('user_ids', []):
-                can_access = True
-    return render_template('index.html', user_info=session.get('user_info', {}), main_exam_active=main_exam.get('active', False), main_exam_attempted=user_record.get('main_exam_attempted', False), main_exam_can_access=can_access)
+    return render_template('index.html', user_info=session.get('user_info', {}))
 
 @app.route('/generate_mcqs', methods=['GET', 'POST'])
 @login_required
@@ -809,15 +630,13 @@ def mcq_answering():
                 "user_info": session['user_info'],
                 "questions_generated": [q['question'] for q in questions],
                 "answers": current_answers,
-                "timestamp": datetime.datetime.now().isoformat(),
-                "exam_type": "self_exam"
+                "timestamp": datetime.datetime.now().isoformat()
             }
 
-            pdf_path = create_pdf_report(full_submission_data)
-            full_submission_data["report_file"] = os.path.basename(pdf_path)
             save_submission(full_submission_data)
+            pdf_filename = create_pdf_report(full_submission_data)
 
-            session['last_pdf_path'] = pdf_path
+            session['last_pdf_path'] = pdf_filename
             session['submission_complete'] = True
             session.pop('questions', None)
             session.pop('user_selections', None)
@@ -828,438 +647,26 @@ def mcq_answering():
     return render_template('mcq_answering.html', questions=questions, user_info=session.get('user_info', {}),
                            user_selections=user_selections)
 
-
-# --------- ADMIN: Configure Main Exam ---------
-@app.route('/admin/main_exam', methods=['GET', 'POST'])
-def admin_main_exam():
-    if not session.get('logged_in') or not session.get('is_admin'):
-        flash('Admin access required.', 'danger')
-        return redirect(url_for('login'))
-
-    current_config = load_main_exam()
-
-    if request.method == 'POST':
-        try:
-            duration_minutes = int(request.form.get('duration_minutes', '0'))
-        except ValueError:
-            duration_minutes = 0
-
-        # Option A: Build from question bank using subject/level/count
-        subject = request.form.get('subject', '').strip()
-        level = request.form.get('level', '').strip()
-        try:
-            count = int(request.form.get('count', '0'))
-        except ValueError:
-            count = 0
-
-        questions = []
-        if subject and level and count > 0:
-            try:
-                questions = generate_mcqs(subject, level, count)
-            except Exception as e:
-                print(f"Error generating main exam questions: {e}")
-
-        # Option B: Custom JSON (overrides Option A if provided and valid)
-        custom_json = request.form.get('custom_questions_json', '').strip()
-        if custom_json:
-            try:
-                parsed = json.loads(custom_json)
-                if isinstance(parsed, list):
-                    # Validate minimal schema
-                    valid_list = []
-                    for item in parsed:
-                        if isinstance(item, dict) and all(k in item for k in ["question", "options", "correct_answer"]):
-                            valid_list.append(item)
-                    if valid_list:
-                        questions = valid_list
-            except Exception as e:
-                print(f"Invalid custom questions JSON: {e}")
-
-        active = request.form.get('active') == 'on'
-
-        # Access control: mode all/selected and list of usernames
-        access_mode = request.form.get('access_mode', 'all')
-        # Prefer checkbox selections
-        allowed_usernames = request.form.getlist('allowed_usernames') or []
-        # Fallback: textarea comma-separated list if present
-        if not allowed_usernames:
-            raw_user_list = request.form.get('allowed_users', '').strip()
-            if access_mode == 'selected' and raw_user_list:
-                allowed_usernames = [u.strip() for u in raw_user_list.split(',') if u.strip()]
-
-        # Handle user-specific settings
-        users = load_users()
-        changed = False
-        
-        # Process reset attempts
-        reset_names = request.form.getlist('reset_usernames') or []
-        reset_field = request.form.get('reset_attempts', '').strip()
-        if reset_field:
-            reset_names += [u.strip() for u in reset_field.split(',') if u.strip()]
-        
-        # Process allow_retake checkboxes
-        allow_retake_users = request.form.getlist('allow_retake') or []
-        
-        # Update user settings
-        for uname in users:
-            user_changed = False
-            
-            # Handle reset attempts
-            if uname in reset_names and users[uname].get('main_exam_attempted'):
-                users[uname]['main_exam_attempted'] = False
-                user_changed = True
-            
-            # Handle allow_retake
-            new_retake_status = uname in allow_retake_users
-            if users[uname].get('allow_retake') != new_retake_status:
-                users[uname]['allow_retake'] = new_retake_status
-                user_changed = True
-                
-            if user_changed:
-                changed = True
-        
-        if changed:
-            save_users(users)
-            flash('User settings updated successfully.', 'success')
-
-        new_config = {
-            'active': active,
-            'duration_minutes': max(0, duration_minutes),
-            'questions': questions or current_config.get('questions', []),
-            'access': {
-                'mode': access_mode,
-                'user_ids': allowed_usernames
-            },
-            'penalty_per_step': int(request.form.get('penalty_per_step', current_config.get('penalty_per_step', 0) or 0))
-        }
-        save_main_exam(new_config)
-
-        # If requested, reset attempts for the newly allowed users now
-        if request.form.get('reset_allowed_now') == 'on' and access_mode == 'selected' and allowed_usernames:
-            users = load_users()
-            changed = False
-            for uname in allowed_usernames:
-                if uname in users and users[uname].get('main_exam_attempted'):
-                    users[uname]['main_exam_attempted'] = False
-                    changed = True
-            if changed:
-                save_users(users)
-                flash('Re-attempts enabled for selected users.', 'success')
-        flash('Main exam configuration saved.', 'success')
-        return redirect(url_for('admin_main_exam'))
-
-    # Prepare data for the template
-    users = load_users()
-    all_usernames = sorted(list(users.keys()))
-    return render_template('admin_main_exam.html', 
-                         config=current_config, 
-                         all_usernames=all_usernames,
-                         users=users)
-
-
-# --------- USER: Start and Take Main Exam with Timer ---------
-@app.route('/main_exam/start')
-@login_required
-def main_exam_start():
-    # Load configured exam
-    config = load_main_exam()
-    if not config.get('active'):
-        flash('Main exam is not active.', 'warning')
-        return redirect(url_for('index'))
-
-    # Ensure questions exist
-    questions = config.get('questions', [])
-    if not questions:
-        flash('Main exam has no questions configured.', 'danger')
-        return redirect(url_for('index'))
-
-    # Enforce access control and exam attempt limits
-    users = load_users()
-    username = session.get('username')
-    user = users.get(username, {})
-    
-    # Check access control
-    access = config.get('access', {"mode": "all", "user_ids": []})
-    if access.get('mode') == 'selected' and (not username or username not in access.get('user_ids', [])):
-        flash('You are not allowed to take the main exam.', 'danger')
-        return redirect(url_for('index'))
-    
-    # Check if user has already attempted and doesn't have retake permission
-    if user.get('main_exam_attempted') and not user.get('allow_retake'):
-        flash('You have already attempted the main exam.', 'info')
-        return redirect(url_for('index'))
-    
-    # If user has allow_retake but hasn't started the retake yet, reset their attempt status
-    if user.get('allow_retake'):
-        user['main_exam_attempted'] = False
-        user['allow_retake'] = False  # Reset the flag after allowing one retake
-        save_users(users)
-        flash('You have been granted permission to retake the exam. Good luck!', 'success')
-
-    # Initialize/Reset session for main exam
-    session['main_exam_questions'] = questions
-    session['main_exam_user_selections'] = [None] * len(questions)
-    duration_minutes = int(config.get('duration_minutes', 0) or 0)
-    session['main_exam_end_time'] = (datetime.datetime.utcnow() + datetime.timedelta(minutes=duration_minutes)).isoformat()
-    
-    # Clear any previous submission complete flag
-    if 'submission_complete' in session:
-        session.pop('submission_complete')
-        
-    return redirect(url_for('main_exam'))
-
-
-def process_exam_submission(questions, end_time_iso, force_submit=False):
-    """Helper function to process exam submission and handle all the logic."""
-    try:
-        end_time = datetime.datetime.fromisoformat(end_time_iso)
-    except Exception:
-        end_time = datetime.datetime.utcnow()
-    
-    remaining_seconds = int((end_time - datetime.datetime.utcnow()).total_seconds())
-    
-    # If not forcing submission and time is up, redirect to submit
-    if not force_submit and remaining_seconds > 0 and request.method == 'GET':
-        return redirect(url_for('main_exam'))
-    
-    current_answers = []
-    new_selections_from_form = [None] * len(questions)
-    
-    for i, q_data in enumerate(questions):
-        selected_number = request.form.get(f'q_{i}', '').strip() if request.method == 'POST' else ''
-        options = q_data['options']
-        selected_option = None
-        valid = True
-        
-        if not selected_number:
-            # If time is up, treat unanswered questions as empty
-            if force_submit:
-                selected_number = ''
-                valid = False
-            else:
-                flash('Please answer all questions before submitting.', 'warning')
-                return redirect(url_for('main_exam'))
-        
-        try:
-            selected_idx = int(selected_number) - 1
-            if 0 <= selected_idx < len(options):
-                selected_option = options[selected_idx]
-                new_selections_from_form[i] = selected_number
-            else:
-                valid = False
-        except ValueError:
-            valid = False
-        
-        is_correct = (selected_option == q_data['correct_answer']) if valid else False
-        
-        current_answers.append({
-            "question": q_data['question'],
-            "options": q_data['options'],
-            "user_answer": selected_option if valid else selected_number,
-            "correct_answer": q_data['correct_answer'],
-            "is_correct": is_correct,
-            "answer_number": selected_number
-        })
-    
-    # Get warning count from form
-    try:
-        warnings_count = int(request.form.get('warnings_count', '0'))
-    except Exception:
-        warnings_count = 0
-    
-    # Prepare submission data
-    full_submission_data = {
-        "user_info": session['user_info'],
-        "exam_type": "main_exam",
-        "questions_generated": [q['question'] for q in questions],
-        "answers": current_answers,
-        "timestamp": datetime.datetime.now().isoformat(),
-        "warnings_count": warnings_count,
-        "auto_submitted": force_submit
-    }
-    
-    # Generate and save report
-    pdf_path = create_pdf_report(full_submission_data)
-    full_submission_data["report_file"] = os.path.basename(pdf_path)
-    save_submission(full_submission_data)
-    
-    # Mark user as attempted
-    users = load_users()
-    username = session.get('username')
-    if username in users:
-        users[username]['main_exam_attempted'] = True
-        save_users(users)
-    
-    # Cleanup session
-    session['last_pdf_path'] = pdf_path
-    session['submission_complete'] = True
-    session.pop('main_exam_questions', None)
-    session.pop('main_exam_user_selections', None)
-    session.pop('main_exam_end_time', None)
-    
-    if force_submit:
-        flash('Time is up! Your exam has been automatically submitted.', 'warning')
-    else:
-        flash('Exam submitted successfully!', 'success')
-    
-    return redirect(url_for('report_display'))
-
-@app.route('/main_exam', methods=['GET', 'POST'])
-@login_required
-def main_exam():
-    # Check if exam session is valid
-    questions = session.get('main_exam_questions')
-    end_time_iso = session.get('main_exam_end_time')
-    
-    if not questions or not end_time_iso:
-        flash('Main exam session not started or has expired.', 'warning')
-        return redirect(url_for('index'))
-
-    # Calculate remaining time
-    try:
-        end_time = datetime.datetime.fromisoformat(end_time_iso)
-    except Exception:
-        end_time = datetime.datetime.utcnow()
-    
-    remaining_seconds = int((end_time - datetime.datetime.utcnow()).total_seconds())
-    
-    # Check if exam has already been submitted
-    if 'submission_complete' in session and session['submission_complete']:
-        flash('Your exam has already been submitted.', 'info')
-        return redirect(url_for('report_display'))
-    
-    # If time is up, force submission
-    if remaining_seconds <= 0:
-        return process_exam_submission(questions, end_time_iso, force_submit=True)
-    
-    remaining_seconds = max(0, remaining_seconds)  # Ensure it's not negative
-
-    # Initialize or update user selections
-    user_selections = session.get('main_exam_user_selections', [None] * len(questions))
-    if len(user_selections) != len(questions):
-        user_selections = [None] * len(questions)
-        session['main_exam_user_selections'] = user_selections
-
-    # Handle form submission
-    if request.method == 'POST':
-        current_answers = []
-        all_answered = True
-        new_selections_from_form = [None] * len(questions)
-
-        for i, q_data in enumerate(questions):
-            selected_number = request.form.get(f'q_{i}') if request.method == 'POST' else None
-            options = q_data['options']
-            selected_option = None
-            valid = True
-
-            if selected_number is None or str(selected_number).strip() == '':
-                all_answered = False
-                new_selections_from_form[i] = ''
-                valid = False
-            else:
-                try:
-                    selected_idx = int(selected_number) - 1
-                    if 0 <= selected_idx < len(options):
-                        selected_option = options[selected_idx]
-                        new_selections_from_form[i] = selected_number
-                    else:
-                        all_answered = False
-                        new_selections_from_form[i] = selected_number
-                        valid = False
-                except ValueError:
-                    all_answered = False
-                    new_selections_from_form[i] = selected_number
-                    valid = False
-            
-            # Correctly indented code for each question in the loop
-            is_correct = (selected_option == q_data['correct_answer']) if valid else False
-
-            current_answers.append({
-                "question": q_data['question'],
-                "options": q_data['options'],
-                "user_answer": selected_option if valid else selected_number,
-                "correct_answer": q_data['correct_answer'],
-                "is_correct": is_correct,
-                "answer_number": selected_number
-            })
-
-        session['main_exam_user_selections'] = new_selections_from_form
-
-        # Cheating/Warning counter from client
-        try:
-            warnings_count = int(request.form.get('warnings_count', '0'))
-        except Exception:
-            warnings_count = 0
-
-        # Finalize submission either on manual submit or timeout
-        full_submission_data = {
-            "user_info": session['user_info'],
-            "exam_type": "main_exam",
-            "questions_generated": [q['question'] for q in questions],
-            "answers": current_answers,
-            "timestamp": datetime.datetime.now().isoformat(),
-            "warnings_count": warnings_count
-        }
-        pdf_path = create_pdf_report(full_submission_data)
-        full_submission_data["report_file"] = os.path.basename(pdf_path)
-        save_submission(full_submission_data)
-
-        # Mark user as attempted and clear any retake flags
-        users = load_users()
-        username = session.get('username')
-        if username in users:
-            users[username]['main_exam_attempted'] = True
-            # Clear any retake flags when exam is submitted
-            if 'allow_retake' in users[username]:
-                users[username]['allow_retake'] = False
-            save_users(users)
-
-        # Cleanup and redirect to report
-        session['last_pdf_path'] = pdf_path
-        session['submission_complete'] = True
-        session.pop('main_exam_questions', None)
-        session.pop('main_exam_user_selections', None)
-        session.pop('main_exam_end_time', None)
-        flash('Main exam submitted!', 'success')
-        return redirect(url_for('report_display'))
-
-    return render_template('main_exam.html', questions=questions, user_info=session.get('user_info', {}), user_selections=user_selections, remaining_seconds=remaining_seconds)
-    
 @app.route('/report')
 @login_required
 def report_display():
-    # Show a list of past submissions for the logged-in user
-    username = session.get('username')
-    if not username:
-        flash('Please log in.', 'warning')
-        return redirect(url_for('login'))
+    if not session.get('submission_complete'):
+        flash("No submission found to display report.", 'warning')
+        return redirect(url_for('index'))
 
-    submissions = load_submissions()
-    user_subs = []
-    for sub in submissions:
-        # match by name+phone or unique_id if available
-        u = sub.get('user_info', {})
-        if not u:
-            continue
-        if session.get('user_info', {}).get('unique_id') and u.get('unique_id') == session['user_info']['unique_id']:
-            user_subs.append(sub)
-        elif session.get('user_info', {}).get('name') == u.get('name') and session.get('user_info', {}).get('phone') == u.get('phone'):
-            user_subs.append(sub)
+    pdf_path = session.get('last_pdf_path')
+    if pdf_path and os.path.exists(pdf_path):
+        filename = os.path.basename(pdf_path)
+    else:
+        filename = None
 
-    # Sort newest first
-    try:
-        user_subs.sort(key=lambda s: s.get('timestamp', ''), reverse=True)
-    except Exception:
-        pass
-
-    return render_template('report.html', submissions=user_subs)
+    return render_template('report.html', filename=filename)
 
 @app.route('/download_report/<path:filename>')
 @login_required
 def download_report(filename):
-    safe_path = os.path.join(REPORTS_DIR, filename)
-    if os.path.exists(safe_path):
-        return send_file(safe_path, as_attachment=True)
+    if os.path.exists(filename):
+        return send_file(filename, as_attachment=True)
     else:
         flash("Report file not found.", 'danger')
         return redirect(url_for('report_display'))
@@ -1287,17 +694,8 @@ if __name__ == '__main__':
         with open(QUESTION_BANK_FILE, 'w') as f:
             json.dump([], f) # Initialize as an empty list
 
-    # Ensure main exam file exists
-    if not os.path.exists(MAIN_EXAM_FILE):
-        with open(MAIN_EXAM_FILE, 'w') as f:
-            json.dump({"active": False, "duration_minutes": 0, "questions": []}, f)
-
     # Create 'fonts' directory if it doesn't exist
     if not os.path.exists('fonts'):
         os.makedirs('fonts')
 
-    # Ensure reports directory exists
-    if not os.path.exists(REPORTS_DIR):
-        os.makedirs(REPORTS_DIR)
-    port = int(os.environ.get("PORT", 10000))
-    app.run(host='0.0.0.0', port=port)
+    app.run(debug=True)
