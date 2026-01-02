@@ -1,4 +1,11 @@
-streamlit
+Flask
 python-dotenv
 google-generativeai
+google-api-core
+google-auth
+google-auth-httplib2
+googleapis-common-protos
 fpdf2
+Werkzeug
+cryptography
+gunicorn

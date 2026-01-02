@@ -1,0 +1,1462 @@
+[
+  {
+    "user_info": {
+      "name": "Abhisek chor",
+      "phone": "7439398980",
+      "stream": "Science ",
+      "unique_id": "AEU5BV"
+    },
+    "exam_type": "main_exam",
+    "questions_generated": [
+      "What is a generator in Python?",
+      "Which of the following is a mutable data type in Python?",
+      "Which of the following statements about Python's garbage collection is true?",
+      "What does the `*args` syntax do in a Python function definition?",
+      "What is a Namespace in python?",
+      "What is a decorator in Python?",
+      "What is the purpose of the `__init__` method in a Python class?",
+      "What is the difference between `==` and `is` in Python?",
+      "What does the `map()` function do in Python?",
+      "Which data structure would be most suitable to implement a Last-In-First-Out (LIFO) system?",
+      "What is the purpose of the `finally` block in a `try-except` statement?",
+      "What is the output of `print(type(1/2))`?",
+      "What does the `filter()` function do in Python?",
+      "What is the output of `print('hello'.upper())`?",
+      "How can you install a Python package using pip?",
+      "What is the output of `[i**2 for i in range(5) if i % 2 == 0]`?",
+      "What is the purpose of the `pickle` module in Python?",
+      "What is the purpose of the `with` statement in Python?",
+      "What is the difference between `append()` and `extend()` methods in Python lists?",
+      "What is the purpose of `__str__` method in a Python class?",
+      "Which of these is a dunder (double underscore) method in python?",
+      "Which module is used to handle JSON data in Python?",
+      "What is the purpose of the `super()` function in Python?",
+      "What is the primary difference between a list and a tuple in Python?",
+      "Which of the following is the correct way to open a file in Python for reading and writing in binary mode?"
+    ],
+    "answers": [
+      {
+        "question": "What is a generator in Python?",
+        "options": [
+          "A function that returns a list of values.",
+          "A function that uses the `yield` keyword to return a sequence of values one at a time.",
+          "A class that is used to generate random numbers.",
+          "A module that is used to create graphical user interfaces."
+        ],
+        "user_answer": "A function that returns a list of values.",
+        "correct_answer": "A function that uses the `yield` keyword to return a sequence of values one at a time.",
+        "is_correct": false,
+        "answer_number": "1"
+      },
+      {
+        "question": "Which of the following is a mutable data type in Python?",
+        "options": [
+          "tuple",
+          "string",
+          "int",
+          "list"
+        ],
+        "user_answer": "list",
+        "correct_answer": "list",
+        "is_correct": true,
+        "answer_number": "4"
+      },
+      {
+        "question": "Which of the following statements about Python's garbage collection is true?",
+        "options": [
+          "Python does not have garbage collection.",
+          "Python uses manual memory management.",
+          "Python automatically manages memory using reference counting and a cycle-detecting garbage collector.",
+          "Python relies solely on the operating system for memory management."
+        ],
+        "user_answer": "Python does not have garbage collection.",
+        "correct_answer": "Python automatically manages memory using reference counting and a cycle-detecting garbage collector.",
+        "is_correct": false,
+        "answer_number": "1"
+      },
+      {
+        "question": "What does the `*args` syntax do in a Python function definition?",
+        "options": [
+          "It allows the function to accept a variable number of keyword arguments",
+          "It allows the function to accept a variable number of positional arguments",
+          "It forces the function to only accept arguments as a list",
+          "It creates a generator object."
+        ],
+        "user_answer": "It creates a generator object.",
+        "correct_answer": "It allows the function to accept a variable number of positional arguments",
+        "is_correct": false,
+        "answer_number": "4"
+      },
+      {
+        "question": "What is a Namespace in python?",
+        "options": [
+          "A way to organize and reuse code",
+          "A naming system to avoid name collisions",
+          "A data structure used to store key-value pairs",
+          "A block of code that executes only once"
+        ],
+        "user_answer": "A way to organize and reuse code",
+        "correct_answer": "A naming system to avoid name collisions",
+        "is_correct": false,
+        "answer_number": "1"
+      },
+      {
+        "question": "What is a decorator in Python?",
+        "options": [
+          "A design pattern for creating flexible and reusable classes",
+          "A function that takes another function as an argument, adds some functionality, and returns the modified function",
+          "A way to make code more readable",
+          "A way to add comments to your code"
+        ],
+        "user_answer": "A way to make code more readable",
+        "correct_answer": "A function that takes another function as an argument, adds some functionality, and returns the modified function",
+        "is_correct": false,
+        "answer_number": "3"
+      },
+      {
+        "question": "What is the purpose of the `__init__` method in a Python class?",
+        "options": [
+          "To create a new instance of the class",
+          "To initialize the attributes of an object when it is created",
+          "To delete an object from memory",
+          "To define the class's docstring"
+        ],
+        "user_answer": "To create a new instance of the class",
+        "correct_answer": "To initialize the attributes of an object when it is created",
+        "is_correct": false,
+        "answer_number": "1"
+      },
+      {
+        "question": "What is the difference between `==` and `is` in Python?",
+        "options": [
+          "`==` compares memory addresses, `is` compares values",
+          "`==` compares values, `is` compares memory addresses",
+          "They are interchangeable",
+          "`==` only works for integers, `is` works for all data types"
+        ],
+        "user_answer": "`==` only works for integers, `is` works for all data types",
+        "correct_answer": "`==` compares values, `is` compares memory addresses",
+        "is_correct": false,
+        "answer_number": "4"
+      },
+      {
+        "question": "What does the `map()` function do in Python?",
+        "options": [
+          "Applies a function to each item in an iterable and returns a list of the results.",
+          "Filters an iterable based on a function.",
+          "Combines two or more iterables into a single iterable.",
+          "Sorts an iterable."
+        ],
+        "user_answer": "Filters an iterable based on a function.",
+        "correct_answer": "Applies a function to each item in an iterable and returns a list of the results.",
+        "is_correct": false,
+        "answer_number": "2"
+      },
+      {
+        "question": "Which data structure would be most suitable to implement a Last-In-First-Out (LIFO) system?",
+        "options": [
+          "Queue",
+          "Stack",
+          "Linked List",
+          "Dictionary"
+        ],
+        "user_answer": "Stack",
+        "correct_answer": "Stack",
+        "is_correct": true,
+        "answer_number": "2"
+      },
+      {
+        "question": "What is the purpose of the `finally` block in a `try-except` statement?",
+        "options": [
+          "It executes only if an exception is raised.",
+          "It executes only if no exception is raised.",
+          "It always executes, regardless of whether an exception is raised or not.",
+          "It allows you to define default values if an exception occurs"
+        ],
+        "user_answer": "It allows you to define default values if an exception occurs",
+        "correct_answer": "It always executes, regardless of whether an exception is raised or not.",
+        "is_correct": false,
+        "answer_number": "4"
+      },
+      {
+        "question": "What is the output of `print(type(1/2))`?",
+        "options": [
+          "<class 'int'>",
+          "<class 'float'>",
+          "<class 'str'>",
+          "<class 'complex'>"
+        ],
+        "user_answer": "<class 'float'>",
+        "correct_answer": "<class 'float'>",
+        "is_correct": true,
+        "answer_number": "2"
+      },
+      {
+        "question": "What does the `filter()` function do in Python?",
+        "options": [
+          "Applies a function to each item in an iterable.",
+          "Filters an iterable based on a function.",
+          "Sorts an iterable.",
+          "Reduces an iterable to a single value."
+        ],
+        "user_answer": "Applies a function to each item in an iterable.",
+        "correct_answer": "Filters an iterable based on a function.",
+        "is_correct": false,
+        "answer_number": "1"
+      },
+      {
+        "question": "What is the output of `print('hello'.upper())`?",
+        "options": [
+          "Hello",
+          "hello",
+          "HELLO",
+          "hELLo"
+        ],
+        "user_answer": "hello",
+        "correct_answer": "HELLO",
+        "is_correct": false,
+        "answer_number": "2"
+      },
+      {
+        "question": "How can you install a Python package using pip?",
+        "options": [
+          "import package_name",
+          "pip install package_name",
+          "run package_name.install()",
+          "package_name.installPip()"
+        ],
+        "user_answer": "pip install package_name",
+        "correct_answer": "pip install package_name",
+        "is_correct": true,
+        "answer_number": "2"
+      },
+      {
+        "question": "What is the output of `[i**2 for i in range(5) if i % 2 == 0]`?",
+        "options": [
+          "[0, 1, 4, 9, 16]",
+          "[0, 4, 16]",
+          "[1, 9, 25]",
+          "[0, 2, 4]"
+        ],
+        "user_answer": "[0, 4, 16]",
+        "correct_answer": "[0, 4, 16]",
+        "is_correct": true,
+        "answer_number": "2"
+      },
+      {
+        "question": "What is the purpose of the `pickle` module in Python?",
+        "options": [
+          "To convert Python objects into a string representation.",
+          "To serialize and deserialize Python object structures.",
+          "To perform mathematical operations.",
+          "To handle regular expressions."
+        ],
+        "user_answer": "To serialize and deserialize Python object structures.",
+        "correct_answer": "To serialize and deserialize Python object structures.",
+        "is_correct": true,
+        "answer_number": "2"
+      },
+      {
+        "question": "What is the purpose of the `with` statement in Python?",
+        "options": [
+          "To simplify exception handling.",
+          "To automatically manage resources like files, ensuring they are properly closed.",
+          "To create a loop that iterates over a range of numbers.",
+          "To define a block of code that only executes if a condition is true."
+        ],
+        "user_answer": "To create a loop that iterates over a range of numbers.",
+        "correct_answer": "To automatically manage resources like files, ensuring they are properly closed.",
+        "is_correct": false,
+        "answer_number": "3"
+      },
+      {
+        "question": "What is the difference between `append()` and `extend()` methods in Python lists?",
+        "options": [
+          "`append()` adds a single element to the end of the list, `extend()` adds multiple elements.",
+          "`append()` adds multiple elements to the end of the list, `extend()` adds a single element",
+          "`append()` creates a new list, `extend()` modifies the existing list",
+          "They are interchangeable"
+        ],
+        "user_answer": "`append()` adds a single element to the end of the list, `extend()` adds multiple elements.",
+        "correct_answer": "`append()` adds a single element to the end of the list, `extend()` adds multiple elements.",
+        "is_correct": true,
+        "answer_number": "1"
+      },
+      {
+        "question": "What is the purpose of `__str__` method in a Python class?",
+        "options": [
+          "To define how the object should be initialized",
+          "To define how the object should be represented as a string",
+          "To define how the object should be compared to other objects",
+          "To define how the object should be deleted"
+        ],
+        "user_answer": "To define how the object should be compared to other objects",
+        "correct_answer": "To define how the object should be represented as a string",
+        "is_correct": false,
+        "answer_number": "3"
+      },
+      {
+        "question": "Which of these is a dunder (double underscore) method in python?",
+        "options": [
+          "len()",
+          "print()",
+          "__init__()",
+          "string()"
+        ],
+        "user_answer": "__init__()",
+        "correct_answer": "__init__()",
+        "is_correct": true,
+        "answer_number": "3"
+      },
+      {
+        "question": "Which module is used to handle JSON data in Python?",
+        "options": [
+          "xml",
+          "json",
+          "pickle",
+          "csv"
+        ],
+        "user_answer": "xml",
+        "correct_answer": "json",
+        "is_correct": false,
+        "answer_number": "1"
+      },
+      {
+        "question": "What is the purpose of the `super()` function in Python?",
+        "options": [
+          "To call a method from a parent class.",
+          "To create a new object of a class.",
+          "To delete an object of a class.",
+          "To check if an object is an instance of a class."
+        ],
+        "user_answer": "To call a method from a parent class.",
+        "correct_answer": "To call a method from a parent class.",
+        "is_correct": true,
+        "answer_number": "1"
+      },
+      {
+        "question": "What is the primary difference between a list and a tuple in Python?",
+        "options": [
+          "Lists are immutable, tuples are mutable",
+          "Lists are enclosed in parentheses, tuples in brackets",
+          "Lists are mutable, tuples are immutable",
+          "Tuples can only contain integers, lists can contain any data type"
+        ],
+        "user_answer": "Lists are mutable, tuples are immutable",
+        "correct_answer": "Lists are mutable, tuples are immutable",
+        "is_correct": true,
+        "answer_number": "3"
+      },
+      {
+        "question": "Which of the following is the correct way to open a file in Python for reading and writing in binary mode?",
+        "options": [
+          "open('file.txt', 'r+')",
+          "open('file.txt', 'wb+')",
+          "open('file.txt', 'rb+')",
+          "open('file.txt', 'rw')"
+        ],
+        "user_answer": "open('file.txt', 'rw')",
+        "correct_answer": "open('file.txt', 'rb+')",
+        "is_correct": false,
+        "answer_number": "4"
+      }
+    ],
+    "timestamp": "2025-09-07T21:43:00.251722",
+    "report_file": "abhisek_chor_report_20250907214300.pdf"
+  },
+  {
+    "user_info": {
+      "name": "Deblina samanta",
+      "phone": "9339044861",
+      "stream": "Aiml",
+      "unique_id": "Z8EWLN"
+    },
+    "exam_type": "main_exam",
+    "questions_generated": [
+      "Which of the following data structures follows the Last-In, First-Out (LIFO) principle?",
+      "In a singly linked list, how do you find the last node?",
+      "What is the time complexity of searching for an element in a hash table in the average case?",
+      "Which sorting algorithm has the worst-case time complexity of O(n^2) but is generally faster on small datasets and nearly sorted arrays?",
+      "What is the primary disadvantage of using an array?",
+      "In a Queue, which operation is used to add an element?",
+      "A complete binary tree is a binary tree in which every level, except possibly the last, is completely filled, and all nodes in the last level are as far left as possible. Which data structure is often used to implement a complete binary tree efficiently?",
+      "What is the time complexity of traversing a tree using Breadth-First Search (BFS)? (V = number of vertices, E = number of edges)",
+      "Which of the following is not a type of tree traversal?",
+      "Which data structure is best suited for implementing a recursion function?",
+      "In a graph, what is a cycle?",
+      "What is the worst-case time complexity of Quick Sort?",
+      "Which data structure is a collection of nodes where each node has a value and a pointer to the next node?",
+      "What is the primary operation for removing an element from a stack?",
+      "Which searching algorithm requires the array to be sorted?",
+      "What is the main characteristic of a min-heap?",
+      "Which of the following is an example of a dynamic array?",
+      "In computer science, what is a 'Trie' used for?",
+      "Which of the following is true about a doubly linked list?",
+      "What is the time complexity of pushing an element onto a stack implemented with an array?",
+      "Which algorithm is used to find the shortest path from a single source vertex to all other vertices in a weighted graph?",
+      "What is the primary difference between a stack and a queue?",
+      "A binary search tree (BST) has the property that for every node, all values in its left subtree are less than the node's value, and all values in its right subtree are greater. What is the average-case time complexity for searching in a BST?",
+      "In a graph, a 'spanning tree' is a subgraph that connects all the vertices together, without any cycles and with the minimum possible number of edges. What is the name of the algorithm that finds the minimum spanning tree by adding the edges with the smallest weights first, as long as they don't form a cycle?",
+      "What is the space complexity of a recursive algorithm that has a recursion depth of n?"
+    ],
+    "answers": [
+      {
+        "question": "Which of the following data structures follows the Last-In, First-Out (LIFO) principle?",
+        "options": [
+          "Queue",
+          "Array",
+          "Stack",
+          "Linked List"
+        ],
+        "user_answer": "Queue",
+        "correct_answer": "Stack",
+        "is_correct": false,
+        "answer_number": "1"
+      },
+      {
+        "question": "In a singly linked list, how do you find the last node?",
+        "options": [
+          "Traverse the list until the next pointer is null.",
+          "Check the head pointer.",
+          "Traverse the list until the node data is null.",
+          "The last node is always the one added first."
+        ],
+        "user_answer": "Traverse the list until the next pointer is null.",
+        "correct_answer": "Traverse the list until the next pointer is null.",
+        "is_correct": true,
+        "answer_number": "1"
+      },
+      {
+        "question": "What is the time complexity of searching for an element in a hash table in the average case?",
+        "options": [
+          "O(n)",
+          "O(log n)",
+          "O(1)",
+          "O(n^2)"
+        ],
+        "user_answer": "O(n^2)",
+        "correct_answer": "O(1)",
+        "is_correct": false,
+        "answer_number": "4"
+      },
+      {
+        "question": "Which sorting algorithm has the worst-case time complexity of O(n^2) but is generally faster on small datasets and nearly sorted arrays?",
+        "options": [
+          "Merge Sort",
+          "Bubble Sort",
+          "Quick Sort",
+          "Insertion Sort"
+        ],
+        "user_answer": "Insertion Sort",
+        "correct_answer": "Insertion Sort",
+        "is_correct": true,
+        "answer_number": "4"
+      },
+      {
+        "question": "What is the primary disadvantage of using an array?",
+        "options": [
+          "Fixed size",
+          "Slow access time",
+          "Inefficient memory usage",
+          "No support for multiple data types"
+        ],
+        "user_answer": "No support for multiple data types",
+        "correct_answer": "Fixed size",
+        "is_correct": false,
+        "answer_number": "4"
+      },
+      {
+        "question": "In a Queue, which operation is used to add an element?",
+        "options": [
+          "Dequeue",
+          "Pop",
+          "Push",
+          "Enqueue"
+        ],
+        "user_answer": "Enqueue",
+        "correct_answer": "Enqueue",
+        "is_correct": true,
+        "answer_number": "4"
+      },
+      {
+        "question": "A complete binary tree is a binary tree in which every level, except possibly the last, is completely filled, and all nodes in the last level are as far left as possible. Which data structure is often used to implement a complete binary tree efficiently?",
+        "options": [
+          "Linked List",
+          "Array",
+          "Stack",
+          "Hash Table"
+        ],
+        "user_answer": "Linked List",
+        "correct_answer": "Array",
+        "is_correct": false,
+        "answer_number": "1"
+      },
+      {
+        "question": "What is the time complexity of traversing a tree using Breadth-First Search (BFS)? (V = number of vertices, E = number of edges)",
+        "options": [
+          "O(V + E)",
+          "O(V)",
+          "O(V * E)",
+          "O(E)"
+        ],
+        "user_answer": "O(V + E)",
+        "correct_answer": "O(V + E)",
+        "is_correct": true,
+        "answer_number": "1"
+      },
+      {
+        "question": "Which of the following is not a type of tree traversal?",
+        "options": [
+          "Preorder",
+          "Inorder",
+          "Postorder",
+          "Medianorder"
+        ],
+        "user_answer": "Medianorder",
+        "correct_answer": "Medianorder",
+        "is_correct": true,
+        "answer_number": "4"
+      },
+      {
+        "question": "Which data structure is best suited for implementing a recursion function?",
+        "options": [
+          "Queue",
+          "Stack",
+          "Linked List",
+          "Array"
+        ],
+        "user_answer": "Array",
+        "correct_answer": "Stack",
+        "is_correct": false,
+        "answer_number": "4"
+      },
+      {
+        "question": "In a graph, what is a cycle?",
+        "options": [
+          "A path that starts and ends at the same vertex.",
+          "A path that visits every vertex exactly once.",
+          "A path with no edges.",
+          "An edge with no vertices."
+        ],
+        "user_answer": "A path that starts and ends at the same vertex.",
+        "correct_answer": "A path that starts and ends at the same vertex.",
+        "is_correct": true,
+        "answer_number": "1"
+      },
+      {
+        "question": "What is the worst-case time complexity of Quick Sort?",
+        "options": [
+          "O(n log n)",
+          "O(n)",
+          "O(n^2)",
+          "O(log n)"
+        ],
+        "user_answer": "O(n)",
+        "correct_answer": "O(n^2)",
+        "is_correct": false,
+        "answer_number": "2"
+      },
+      {
+        "question": "Which data structure is a collection of nodes where each node has a value and a pointer to the next node?",
+        "options": [
+          "Array",
+          "Stack",
+          "Linked List",
+          "Queue"
+        ],
+        "user_answer": "Linked List",
+        "correct_answer": "Linked List",
+        "is_correct": true,
+        "answer_number": "3"
+      },
+      {
+        "question": "What is the primary operation for removing an element from a stack?",
+        "options": [
+          "Pop",
+          "Push",
+          "Peek",
+          "Enqueue"
+        ],
+        "user_answer": "Pop",
+        "correct_answer": "Pop",
+        "is_correct": true,
+        "answer_number": "1"
+      },
+      {
+        "question": "Which searching algorithm requires the array to be sorted?",
+        "options": [
+          "Linear Search",
+          "Binary Search",
+          "Jump Search",
+          "Both B and C"
+        ],
+        "user_answer": "Binary Search",
+        "correct_answer": "Both B and C",
+        "is_correct": false,
+        "answer_number": "2"
+      },
+      {
+        "question": "What is the main characteristic of a min-heap?",
+        "options": [
+          "The root node is always the largest element.",
+          "The root node is always the smallest element.",
+          "Each parent node has at most one child.",
+          "The tree is always a complete binary tree."
+        ],
+        "user_answer": "The root node is always the smallest element.",
+        "correct_answer": "The root node is always the smallest element.",
+        "is_correct": true,
+        "answer_number": "2"
+      },
+      {
+        "question": "Which of the following is an example of a dynamic array?",
+        "options": [
+          "Java's `int[]`",
+          "Python's `list`",
+          "C++'s `std::array`",
+          "C's `int arr[50]`"
+        ],
+        "user_answer": "C++'s `std::array`",
+        "correct_answer": "Python's `list`",
+        "is_correct": false,
+        "answer_number": "3"
+      },
+      {
+        "question": "In computer science, what is a 'Trie' used for?",
+        "options": [
+          "Storing and retrieving passwords.",
+          "Efficient string searching and prefix matching.",
+          "Graph traversal.",
+          "Implementing hash tables."
+        ],
+        "user_answer": "Implementing hash tables.",
+        "correct_answer": "Efficient string searching and prefix matching.",
+        "is_correct": false,
+        "answer_number": "4"
+      },
+      {
+        "question": "Which of the following is true about a doubly linked list?",
+        "options": [
+          "It requires more memory than a singly linked list.",
+          "It allows for forward traversal only.",
+          "Deletion of a node is always O(n).",
+          "It is always circular."
+        ],
+        "user_answer": "It requires more memory than a singly linked list.",
+        "correct_answer": "It requires more memory than a singly linked list.",
+        "is_correct": true,
+        "answer_number": "1"
+      },
+      {
+        "question": "What is the time complexity of pushing an element onto a stack implemented with an array?",
+        "options": [
+          "O(n)",
+          "O(log n)",
+          "O(1)",
+          "O(n^2)"
+        ],
+        "user_answer": "O(n)",
+        "correct_answer": "O(1)",
+        "is_correct": false,
+        "answer_number": "1"
+      },
+      {
+        "question": "Which algorithm is used to find the shortest path from a single source vertex to all other vertices in a weighted graph?",
+        "options": [
+          "Floyd-Warshall Algorithm",
+          "Dijkstra's Algorithm",
+          "Prim's Algorithm",
+          "Kruskal's Algorithm"
+        ],
+        "user_answer": "Dijkstra's Algorithm",
+        "correct_answer": "Dijkstra's Algorithm",
+        "is_correct": true,
+        "answer_number": "2"
+      },
+      {
+        "question": "What is the primary difference between a stack and a queue?",
+        "options": [
+          "Stacks are used for recursion, queues are not.",
+          "Stacks follow LIFO, queues follow FIFO.",
+          "Stacks are implemented with arrays, queues with linked lists.",
+          "Queues are a type of tree, stacks are not."
+        ],
+        "user_answer": "Stacks follow LIFO, queues follow FIFO.",
+        "correct_answer": "Stacks follow LIFO, queues follow FIFO.",
+        "is_correct": true,
+        "answer_number": "2"
+      },
+      {
+        "question": "A binary search tree (BST) has the property that for every node, all values in its left subtree are less than the node's value, and all values in its right subtree are greater. What is the average-case time complexity for searching in a BST?",
+        "options": [
+          "O(n)",
+          "O(log n)",
+          "O(1)",
+          "O(n^2)"
+        ],
+        "user_answer": "O(1)",
+        "correct_answer": "O(log n)",
+        "is_correct": false,
+        "answer_number": "3"
+      },
+      {
+        "question": "In a graph, a 'spanning tree' is a subgraph that connects all the vertices together, without any cycles and with the minimum possible number of edges. What is the name of the algorithm that finds the minimum spanning tree by adding the edges with the smallest weights first, as long as they don't form a cycle?",
+        "options": [
+          "Prim's Algorithm",
+          "Dijkstra's Algorithm",
+          "Kruskal's Algorithm",
+          "Floyd-Warshall Algorithm"
+        ],
+        "user_answer": "Kruskal's Algorithm",
+        "correct_answer": "Kruskal's Algorithm",
+        "is_correct": true,
+        "answer_number": "3"
+      },
+      {
+        "question": "What is the space complexity of a recursive algorithm that has a recursion depth of n?",
+        "options": [
+          "O(1)",
+          "O(log n)",
+          "O(n)",
+          "O(n^2)"
+        ],
+        "user_answer": "O(n^2)",
+        "correct_answer": "O(n)",
+        "is_correct": false,
+        "answer_number": "4"
+      }
+    ],
+    "timestamp": "2025-09-07T21:56:56.156269",
+    "report_file": "deblina_samanta_report_20250907215656.pdf"
+  },
+  {
+    "user_info": {
+      "name": "Deblina samanta",
+      "phone": "9339044861",
+      "stream": "Aiml",
+      "unique_id": "Z8EWLN"
+    },
+    "exam_type": "main_exam",
+    "questions_generated": [
+      "Which of the following data structures follows the Last-In, First-Out (LIFO) principle?",
+      "In a singly linked list, how do you find the last node?",
+      "What is the time complexity of searching for an element in a hash table in the average case?",
+      "Which sorting algorithm has the worst-case time complexity of O(n^2) but is generally faster on small datasets and nearly sorted arrays?",
+      "What is the primary disadvantage of using an array?",
+      "In a Queue, which operation is used to add an element?",
+      "A complete binary tree is a binary tree in which every level, except possibly the last, is completely filled, and all nodes in the last level are as far left as possible. Which data structure is often used to implement a complete binary tree efficiently?",
+      "What is the time complexity of traversing a tree using Breadth-First Search (BFS)? (V = number of vertices, E = number of edges)",
+      "Which of the following is not a type of tree traversal?",
+      "Which data structure is best suited for implementing a recursion function?",
+      "In a graph, what is a cycle?",
+      "What is the worst-case time complexity of Quick Sort?",
+      "Which data structure is a collection of nodes where each node has a value and a pointer to the next node?",
+      "What is the primary operation for removing an element from a stack?",
+      "Which searching algorithm requires the array to be sorted?",
+      "What is the main characteristic of a min-heap?",
+      "Which of the following is an example of a dynamic array?",
+      "In computer science, what is a 'Trie' used for?",
+      "Which of the following is true about a doubly linked list?",
+      "What is the time complexity of pushing an element onto a stack implemented with an array?",
+      "Which algorithm is used to find the shortest path from a single source vertex to all other vertices in a weighted graph?",
+      "What is the primary difference between a stack and a queue?",
+      "A binary search tree (BST) has the property that for every node, all values in its left subtree are less than the node's value, and all values in its right subtree are greater. What is the average-case time complexity for searching in a BST?",
+      "In a graph, a 'spanning tree' is a subgraph that connects all the vertices together, without any cycles and with the minimum possible number of edges. What is the name of the algorithm that finds the minimum spanning tree by adding the edges with the smallest weights first, as long as they don't form a cycle?",
+      "What is the space complexity of a recursive algorithm that has a recursion depth of n?"
+    ],
+    "answers": [
+      {
+        "question": "Which of the following data structures follows the Last-In, First-Out (LIFO) principle?",
+        "options": [
+          "Queue",
+          "Array",
+          "Stack",
+          "Linked List"
+        ],
+        "user_answer": "Stack",
+        "correct_answer": "Stack",
+        "is_correct": true,
+        "answer_number": "3"
+      },
+      {
+        "question": "In a singly linked list, how do you find the last node?",
+        "options": [
+          "Traverse the list until the next pointer is null.",
+          "Check the head pointer.",
+          "Traverse the list until the node data is null.",
+          "The last node is always the one added first."
+        ],
+        "user_answer": "Traverse the list until the next pointer is null.",
+        "correct_answer": "Traverse the list until the next pointer is null.",
+        "is_correct": true,
+        "answer_number": "1"
+      },
+      {
+        "question": "What is the time complexity of searching for an element in a hash table in the average case?",
+        "options": [
+          "O(n)",
+          "O(log n)",
+          "O(1)",
+          "O(n^2)"
+        ],
+        "user_answer": "O(1)",
+        "correct_answer": "O(1)",
+        "is_correct": true,
+        "answer_number": "3"
+      },
+      {
+        "question": "Which sorting algorithm has the worst-case time complexity of O(n^2) but is generally faster on small datasets and nearly sorted arrays?",
+        "options": [
+          "Merge Sort",
+          "Bubble Sort",
+          "Quick Sort",
+          "Insertion Sort"
+        ],
+        "user_answer": "Bubble Sort",
+        "correct_answer": "Insertion Sort",
+        "is_correct": false,
+        "answer_number": "2"
+      },
+      {
+        "question": "What is the primary disadvantage of using an array?",
+        "options": [
+          "Fixed size",
+          "Slow access time",
+          "Inefficient memory usage",
+          "No support for multiple data types"
+        ],
+        "user_answer": "No support for multiple data types",
+        "correct_answer": "Fixed size",
+        "is_correct": false,
+        "answer_number": "4"
+      },
+      {
+        "question": "In a Queue, which operation is used to add an element?",
+        "options": [
+          "Dequeue",
+          "Pop",
+          "Push",
+          "Enqueue"
+        ],
+        "user_answer": "Enqueue",
+        "correct_answer": "Enqueue",
+        "is_correct": true,
+        "answer_number": "4"
+      },
+      {
+        "question": "A complete binary tree is a binary tree in which every level, except possibly the last, is completely filled, and all nodes in the last level are as far left as possible. Which data structure is often used to implement a complete binary tree efficiently?",
+        "options": [
+          "Linked List",
+          "Array",
+          "Stack",
+          "Hash Table"
+        ],
+        "user_answer": "Array",
+        "correct_answer": "Array",
+        "is_correct": true,
+        "answer_number": "2"
+      },
+      {
+        "question": "What is the time complexity of traversing a tree using Breadth-First Search (BFS)? (V = number of vertices, E = number of edges)",
+        "options": [
+          "O(V + E)",
+          "O(V)",
+          "O(V * E)",
+          "O(E)"
+        ],
+        "user_answer": "O(V)",
+        "correct_answer": "O(V + E)",
+        "is_correct": false,
+        "answer_number": "2"
+      },
+      {
+        "question": "Which of the following is not a type of tree traversal?",
+        "options": [
+          "Preorder",
+          "Inorder",
+          "Postorder",
+          "Medianorder"
+        ],
+        "user_answer": "Inorder",
+        "correct_answer": "Medianorder",
+        "is_correct": false,
+        "answer_number": "2"
+      },
+      {
+        "question": "Which data structure is best suited for implementing a recursion function?",
+        "options": [
+          "Queue",
+          "Stack",
+          "Linked List",
+          "Array"
+        ],
+        "user_answer": "Linked List",
+        "correct_answer": "Stack",
+        "is_correct": false,
+        "answer_number": "3"
+      },
+      {
+        "question": "In a graph, what is a cycle?",
+        "options": [
+          "A path that starts and ends at the same vertex.",
+          "A path that visits every vertex exactly once.",
+          "A path with no edges.",
+          "An edge with no vertices."
+        ],
+        "user_answer": "A path with no edges.",
+        "correct_answer": "A path that starts and ends at the same vertex.",
+        "is_correct": false,
+        "answer_number": "3"
+      },
+      {
+        "question": "What is the worst-case time complexity of Quick Sort?",
+        "options": [
+          "O(n log n)",
+          "O(n)",
+          "O(n^2)",
+          "O(log n)"
+        ],
+        "user_answer": "O(log n)",
+        "correct_answer": "O(n^2)",
+        "is_correct": false,
+        "answer_number": "4"
+      },
+      {
+        "question": "Which data structure is a collection of nodes where each node has a value and a pointer to the next node?",
+        "options": [
+          "Array",
+          "Stack",
+          "Linked List",
+          "Queue"
+        ],
+        "user_answer": "Queue",
+        "correct_answer": "Linked List",
+        "is_correct": false,
+        "answer_number": "4"
+      },
+      {
+        "question": "What is the primary operation for removing an element from a stack?",
+        "options": [
+          "Pop",
+          "Push",
+          "Peek",
+          "Enqueue"
+        ],
+        "user_answer": "Enqueue",
+        "correct_answer": "Pop",
+        "is_correct": false,
+        "answer_number": "4"
+      },
+      {
+        "question": "Which searching algorithm requires the array to be sorted?",
+        "options": [
+          "Linear Search",
+          "Binary Search",
+          "Jump Search",
+          "Both B and C"
+        ],
+        "user_answer": "Jump Search",
+        "correct_answer": "Both B and C",
+        "is_correct": false,
+        "answer_number": "3"
+      },
+      {
+        "question": "What is the main characteristic of a min-heap?",
+        "options": [
+          "The root node is always the largest element.",
+          "The root node is always the smallest element.",
+          "Each parent node has at most one child.",
+          "The tree is always a complete binary tree."
+        ],
+        "user_answer": "The root node is always the largest element.",
+        "correct_answer": "The root node is always the smallest element.",
+        "is_correct": false,
+        "answer_number": "1"
+      },
+      {
+        "question": "Which of the following is an example of a dynamic array?",
+        "options": [
+          "Java's `int[]`",
+          "Python's `list`",
+          "C++'s `std::array`",
+          "C's `int arr[50]`"
+        ],
+        "user_answer": "Python's `list`",
+        "correct_answer": "Python's `list`",
+        "is_correct": true,
+        "answer_number": "2"
+      },
+      {
+        "question": "In computer science, what is a 'Trie' used for?",
+        "options": [
+          "Storing and retrieving passwords.",
+          "Efficient string searching and prefix matching.",
+          "Graph traversal.",
+          "Implementing hash tables."
+        ],
+        "user_answer": "Efficient string searching and prefix matching.",
+        "correct_answer": "Efficient string searching and prefix matching.",
+        "is_correct": true,
+        "answer_number": "2"
+      },
+      {
+        "question": "Which of the following is true about a doubly linked list?",
+        "options": [
+          "It requires more memory than a singly linked list.",
+          "It allows for forward traversal only.",
+          "Deletion of a node is always O(n).",
+          "It is always circular."
+        ],
+        "user_answer": "Deletion of a node is always O(n).",
+        "correct_answer": "It requires more memory than a singly linked list.",
+        "is_correct": false,
+        "answer_number": "3"
+      },
+      {
+        "question": "What is the time complexity of pushing an element onto a stack implemented with an array?",
+        "options": [
+          "O(n)",
+          "O(log n)",
+          "O(1)",
+          "O(n^2)"
+        ],
+        "user_answer": "O(n^2)",
+        "correct_answer": "O(1)",
+        "is_correct": false,
+        "answer_number": "4"
+      },
+      {
+        "question": "Which algorithm is used to find the shortest path from a single source vertex to all other vertices in a weighted graph?",
+        "options": [
+          "Floyd-Warshall Algorithm",
+          "Dijkstra's Algorithm",
+          "Prim's Algorithm",
+          "Kruskal's Algorithm"
+        ],
+        "user_answer": "Dijkstra's Algorithm",
+        "correct_answer": "Dijkstra's Algorithm",
+        "is_correct": true,
+        "answer_number": "2"
+      },
+      {
+        "question": "What is the primary difference between a stack and a queue?",
+        "options": [
+          "Stacks are used for recursion, queues are not.",
+          "Stacks follow LIFO, queues follow FIFO.",
+          "Stacks are implemented with arrays, queues with linked lists.",
+          "Queues are a type of tree, stacks are not."
+        ],
+        "user_answer": "Stacks are implemented with arrays, queues with linked lists.",
+        "correct_answer": "Stacks follow LIFO, queues follow FIFO.",
+        "is_correct": false,
+        "answer_number": "3"
+      },
+      {
+        "question": "A binary search tree (BST) has the property that for every node, all values in its left subtree are less than the node's value, and all values in its right subtree are greater. What is the average-case time complexity for searching in a BST?",
+        "options": [
+          "O(n)",
+          "O(log n)",
+          "O(1)",
+          "O(n^2)"
+        ],
+        "user_answer": "O(1)",
+        "correct_answer": "O(log n)",
+        "is_correct": false,
+        "answer_number": "3"
+      },
+      {
+        "question": "In a graph, a 'spanning tree' is a subgraph that connects all the vertices together, without any cycles and with the minimum possible number of edges. What is the name of the algorithm that finds the minimum spanning tree by adding the edges with the smallest weights first, as long as they don't form a cycle?",
+        "options": [
+          "Prim's Algorithm",
+          "Dijkstra's Algorithm",
+          "Kruskal's Algorithm",
+          "Floyd-Warshall Algorithm"
+        ],
+        "user_answer": "Floyd-Warshall Algorithm",
+        "correct_answer": "Kruskal's Algorithm",
+        "is_correct": false,
+        "answer_number": "4"
+      },
+      {
+        "question": "What is the space complexity of a recursive algorithm that has a recursion depth of n?",
+        "options": [
+          "O(1)",
+          "O(log n)",
+          "O(n)",
+          "O(n^2)"
+        ],
+        "user_answer": "O(n)",
+        "correct_answer": "O(n)",
+        "is_correct": true,
+        "answer_number": "3"
+      }
+    ],
+    "timestamp": "2025-09-07T22:02:51.575716",
+    "report_file": "deblina_samanta_report_20250907220251.pdf"
+  },
+  {
+    "user_info": {
+      "name": "Sandipan Mukherjee ",
+      "phone": "8945890255",
+      "stream": "CSE(AI/ML)",
+      "unique_id": "UTCL6Q"
+    },
+    "exam_type": "main_exam",
+    "questions_generated": [
+      "Which of the following data structures follows the Last-In, First-Out (LIFO) principle?",
+      "In a singly linked list, how do you find the last node?",
+      "What is the time complexity of searching for an element in a hash table in the average case?",
+      "Which sorting algorithm has the worst-case time complexity of O(n^2) but is generally faster on small datasets and nearly sorted arrays?",
+      "What is the primary disadvantage of using an array?",
+      "In a Queue, which operation is used to add an element?",
+      "A complete binary tree is a binary tree in which every level, except possibly the last, is completely filled, and all nodes in the last level are as far left as possible. Which data structure is often used to implement a complete binary tree efficiently?",
+      "What is the time complexity of traversing a tree using Breadth-First Search (BFS)? (V = number of vertices, E = number of edges)",
+      "Which of the following is not a type of tree traversal?",
+      "Which data structure is best suited for implementing a recursion function?",
+      "In a graph, what is a cycle?",
+      "What is the worst-case time complexity of Quick Sort?",
+      "Which data structure is a collection of nodes where each node has a value and a pointer to the next node?",
+      "What is the primary operation for removing an element from a stack?",
+      "Which searching algorithm requires the array to be sorted?",
+      "What is the main characteristic of a min-heap?",
+      "Which of the following is an example of a dynamic array?",
+      "In computer science, what is a 'Trie' used for?",
+      "Which of the following is true about a doubly linked list?",
+      "What is the time complexity of pushing an element onto a stack implemented with an array?",
+      "Which algorithm is used to find the shortest path from a single source vertex to all other vertices in a weighted graph?",
+      "What is the primary difference between a stack and a queue?",
+      "A binary search tree (BST) has the property that for every node, all values in its left subtree are less than the node's value, and all values in its right subtree are greater. What is the average-case time complexity for searching in a BST?",
+      "In a graph, a 'spanning tree' is a subgraph that connects all the vertices together, without any cycles and with the minimum possible number of edges. What is the name of the algorithm that finds the minimum spanning tree by adding the edges with the smallest weights first, as long as they don't form a cycle?",
+      "What is the space complexity of a recursive algorithm that has a recursion depth of n?"
+    ],
+    "answers": [
+      {
+        "question": "Which of the following data structures follows the Last-In, First-Out (LIFO) principle?",
+        "options": [
+          "Queue",
+          "Array",
+          "Stack",
+          "Linked List"
+        ],
+        "user_answer": "Stack",
+        "correct_answer": "Stack",
+        "is_correct": true,
+        "answer_number": "3"
+      },
+      {
+        "question": "In a singly linked list, how do you find the last node?",
+        "options": [
+          "Traverse the list until the next pointer is null.",
+          "Check the head pointer.",
+          "Traverse the list until the node data is null.",
+          "The last node is always the one added first."
+        ],
+        "user_answer": "Traverse the list until the node data is null.",
+        "correct_answer": "Traverse the list until the next pointer is null.",
+        "is_correct": false,
+        "answer_number": "3"
+      },
+      {
+        "question": "What is the time complexity of searching for an element in a hash table in the average case?",
+        "options": [
+          "O(n)",
+          "O(log n)",
+          "O(1)",
+          "O(n^2)"
+        ],
+        "user_answer": "O(n)",
+        "correct_answer": "O(1)",
+        "is_correct": false,
+        "answer_number": "1"
+      },
+      {
+        "question": "Which sorting algorithm has the worst-case time complexity of O(n^2) but is generally faster on small datasets and nearly sorted arrays?",
+        "options": [
+          "Merge Sort",
+          "Bubble Sort",
+          "Quick Sort",
+          "Insertion Sort"
+        ],
+        "user_answer": "Quick Sort",
+        "correct_answer": "Insertion Sort",
+        "is_correct": false,
+        "answer_number": "3"
+      },
+      {
+        "question": "What is the primary disadvantage of using an array?",
+        "options": [
+          "Fixed size",
+          "Slow access time",
+          "Inefficient memory usage",
+          "No support for multiple data types"
+        ],
+        "user_answer": "Inefficient memory usage",
+        "correct_answer": "Fixed size",
+        "is_correct": false,
+        "answer_number": "3"
+      },
+      {
+        "question": "In a Queue, which operation is used to add an element?",
+        "options": [
+          "Dequeue",
+          "Pop",
+          "Push",
+          "Enqueue"
+        ],
+        "user_answer": "Push",
+        "correct_answer": "Enqueue",
+        "is_correct": false,
+        "answer_number": "3"
+      },
+      {
+        "question": "A complete binary tree is a binary tree in which every level, except possibly the last, is completely filled, and all nodes in the last level are as far left as possible. Which data structure is often used to implement a complete binary tree efficiently?",
+        "options": [
+          "Linked List",
+          "Array",
+          "Stack",
+          "Hash Table"
+        ],
+        "user_answer": "Stack",
+        "correct_answer": "Array",
+        "is_correct": false,
+        "answer_number": "3"
+      },
+      {
+        "question": "What is the time complexity of traversing a tree using Breadth-First Search (BFS)? (V = number of vertices, E = number of edges)",
+        "options": [
+          "O(V + E)",
+          "O(V)",
+          "O(V * E)",
+          "O(E)"
+        ],
+        "user_answer": "O(V)",
+        "correct_answer": "O(V + E)",
+        "is_correct": false,
+        "answer_number": "2"
+      },
+      {
+        "question": "Which of the following is not a type of tree traversal?",
+        "options": [
+          "Preorder",
+          "Inorder",
+          "Postorder",
+          "Medianorder"
+        ],
+        "user_answer": "Postorder",
+        "correct_answer": "Medianorder",
+        "is_correct": false,
+        "answer_number": "3"
+      },
+      {
+        "question": "Which data structure is best suited for implementing a recursion function?",
+        "options": [
+          "Queue",
+          "Stack",
+          "Linked List",
+          "Array"
+        ],
+        "user_answer": "Linked List",
+        "correct_answer": "Stack",
+        "is_correct": false,
+        "answer_number": "3"
+      },
+      {
+        "question": "In a graph, what is a cycle?",
+        "options": [
+          "A path that starts and ends at the same vertex.",
+          "A path that visits every vertex exactly once.",
+          "A path with no edges.",
+          "An edge with no vertices."
+        ],
+        "user_answer": "A path with no edges.",
+        "correct_answer": "A path that starts and ends at the same vertex.",
+        "is_correct": false,
+        "answer_number": "3"
+      },
+      {
+        "question": "What is the worst-case time complexity of Quick Sort?",
+        "options": [
+          "O(n log n)",
+          "O(n)",
+          "O(n^2)",
+          "O(log n)"
+        ],
+        "user_answer": "O(n log n)",
+        "correct_answer": "O(n^2)",
+        "is_correct": false,
+        "answer_number": "1"
+      },
+      {
+        "question": "Which data structure is a collection of nodes where each node has a value and a pointer to the next node?",
+        "options": [
+          "Array",
+          "Stack",
+          "Linked List",
+          "Queue"
+        ],
+        "user_answer": "Stack",
+        "correct_answer": "Linked List",
+        "is_correct": false,
+        "answer_number": "2"
+      },
+      {
+        "question": "What is the primary operation for removing an element from a stack?",
+        "options": [
+          "Pop",
+          "Push",
+          "Peek",
+          "Enqueue"
+        ],
+        "user_answer": "Peek",
+        "correct_answer": "Pop",
+        "is_correct": false,
+        "answer_number": "3"
+      },
+      {
+        "question": "Which searching algorithm requires the array to be sorted?",
+        "options": [
+          "Linear Search",
+          "Binary Search",
+          "Jump Search",
+          "Both B and C"
+        ],
+        "user_answer": "Binary Search",
+        "correct_answer": "Both B and C",
+        "is_correct": false,
+        "answer_number": "2"
+      },
+      {
+        "question": "What is the main characteristic of a min-heap?",
+        "options": [
+          "The root node is always the largest element.",
+          "The root node is always the smallest element.",
+          "Each parent node has at most one child.",
+          "The tree is always a complete binary tree."
+        ],
+        "user_answer": "The tree is always a complete binary tree.",
+        "correct_answer": "The root node is always the smallest element.",
+        "is_correct": false,
+        "answer_number": "4"
+      },
+      {
+        "question": "Which of the following is an example of a dynamic array?",
+        "options": [
+          "Java's `int[]`",
+          "Python's `list`",
+          "C++'s `std::array`",
+          "C's `int arr[50]`"
+        ],
+        "user_answer": "Java's `int[]`",
+        "correct_answer": "Python's `list`",
+        "is_correct": false,
+        "answer_number": "1"
+      },
+      {
+        "question": "In computer science, what is a 'Trie' used for?",
+        "options": [
+          "Storing and retrieving passwords.",
+          "Efficient string searching and prefix matching.",
+          "Graph traversal.",
+          "Implementing hash tables."
+        ],
+        "user_answer": "Efficient string searching and prefix matching.",
+        "correct_answer": "Efficient string searching and prefix matching.",
+        "is_correct": true,
+        "answer_number": "2"
+      },
+      {
+        "question": "Which of the following is true about a doubly linked list?",
+        "options": [
+          "It requires more memory than a singly linked list.",
+          "It allows for forward traversal only.",
+          "Deletion of a node is always O(n).",
+          "It is always circular."
+        ],
+        "user_answer": "It allows for forward traversal only.",
+        "correct_answer": "It requires more memory than a singly linked list.",
+        "is_correct": false,
+        "answer_number": "2"
+      },
+      {
+        "question": "What is the time complexity of pushing an element onto a stack implemented with an array?",
+        "options": [
+          "O(n)",
+          "O(log n)",
+          "O(1)",
+          "O(n^2)"
+        ],
+        "user_answer": "O(1)",
+        "correct_answer": "O(1)",
+        "is_correct": true,
+        "answer_number": "3"
+      },
+      {
+        "question": "Which algorithm is used to find the shortest path from a single source vertex to all other vertices in a weighted graph?",
+        "options": [
+          "Floyd-Warshall Algorithm",
+          "Dijkstra's Algorithm",
+          "Prim's Algorithm",
+          "Kruskal's Algorithm"
+        ],
+        "user_answer": "Prim's Algorithm",
+        "correct_answer": "Dijkstra's Algorithm",
+        "is_correct": false,
+        "answer_number": "3"
+      },
+      {
+        "question": "What is the primary difference between a stack and a queue?",
+        "options": [
+          "Stacks are used for recursion, queues are not.",
+          "Stacks follow LIFO, queues follow FIFO.",
+          "Stacks are implemented with arrays, queues with linked lists.",
+          "Queues are a type of tree, stacks are not."
+        ],
+        "user_answer": "Stacks are implemented with arrays, queues with linked lists.",
+        "correct_answer": "Stacks follow LIFO, queues follow FIFO.",
+        "is_correct": false,
+        "answer_number": "3"
+      },
+      {
+        "question": "A binary search tree (BST) has the property that for every node, all values in its left subtree are less than the node's value, and all values in its right subtree are greater. What is the average-case time complexity for searching in a BST?",
+        "options": [
+          "O(n)",
+          "O(log n)",
+          "O(1)",
+          "O(n^2)"
+        ],
+        "user_answer": "O(log n)",
+        "correct_answer": "O(log n)",
+        "is_correct": true,
+        "answer_number": "2"
+      },
+      {
+        "question": "In a graph, a 'spanning tree' is a subgraph that connects all the vertices together, without any cycles and with the minimum possible number of edges. What is the name of the algorithm that finds the minimum spanning tree by adding the edges with the smallest weights first, as long as they don't form a cycle?",
+        "options": [
+          "Prim's Algorithm",
+          "Dijkstra's Algorithm",
+          "Kruskal's Algorithm",
+          "Floyd-Warshall Algorithm"
+        ],
+        "user_answer": "Dijkstra's Algorithm",
+        "correct_answer": "Kruskal's Algorithm",
+        "is_correct": false,
+        "answer_number": "2"
+      },
+      {
+        "question": "What is the space complexity of a recursive algorithm that has a recursion depth of n?",
+        "options": [
+          "O(1)",
+          "O(log n)",
+          "O(n)",
+          "O(n^2)"
+        ],
+        "user_answer": "O(n)",
+        "correct_answer": "O(n)",
+        "is_correct": true,
+        "answer_number": "3"
+      }
+    ],
+    "timestamp": "2025-09-08T10:34:02.536646",
+    "report_file": "sandipan_mukherjee__report_20250908103402.pdf"
+  }
+]

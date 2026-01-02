@@ -1,0 +1,252 @@
+{
+  "active": true,
+  "duration_minutes": 15,
+  "questions": [
+    {
+      "question": "What is 'communication'?",
+      "options": [
+        "Talking to oneself",
+        "Exchanging information",
+        "Avoiding social interaction",
+        "Memorizing facts"
+      ],
+      "correct_answer": "Exchanging information",
+      "Difficulty Level": "Beginner",
+      "subject": "BA"
+    },
+    {
+      "question": "What is the main goal of Humanities studies?",
+      "options": [
+        "To understand the natural world",
+        "To understand human culture and society",
+        "To develop new technologies",
+        "To manage financial resources"
+      ],
+      "correct_answer": "To understand human culture and society",
+      "Difficulty Level": "Beginner",
+      "subject": "BA"
+    },
+    {
+      "question": "What is 'culture'?",
+      "options": [
+        "Growing bacteria in a lab",
+        "Shared values and beliefs of a group",
+        "Specific type of food",
+        "Only the arts"
+      ],
+      "correct_answer": "Shared values and beliefs of a group",
+      "Difficulty Level": "Beginner",
+      "subject": "BA"
+    },
+    {
+      "question": "Which of these skills is useful for teamwork?",
+      "options": [
+        "Isolating oneself",
+        "Ignoring others' opinions",
+        "Collaboration",
+        "Being competitive"
+      ],
+      "correct_answer": "Collaboration",
+      "Difficulty Level": "Beginner",
+      "subject": "BA"
+    },
+    {
+      "question": "Which of these is NOT a typical subject studied in BA?",
+      "options": [
+        "Literature",
+        "History",
+        "Mathematics",
+        "Sociology"
+      ],
+      "correct_answer": "Mathematics",
+      "Difficulty Level": "Beginner",
+      "subject": "BA"
+    },
+    {
+      "question": "What does 'qualitative research' mainly focus on?",
+      "options": [
+        "Numbers and statistics",
+        "In-depth understanding of experiences",
+        "Testing hypotheses",
+        "Large sample sizes"
+      ],
+      "correct_answer": "In-depth understanding of experiences",
+      "Difficulty Level": "Beginner",
+      "subject": "BA"
+    },
+    {
+      "question": "What is 'Globalization'?",
+      "options": [
+        "The study of globes",
+        "Increasing interconnectedness of countries",
+        "Local community development",
+        "Focusing on one's own country"
+      ],
+      "correct_answer": "Increasing interconnectedness of countries",
+      "Difficulty Level": "Beginner",
+      "subject": "BA"
+    },
+    {
+      "question": "What does BA usually stand for?",
+      "options": [
+        "Bachelor of Arts",
+        "Basic Accounting",
+        "Business Administration",
+        "Banking Association"
+      ],
+      "correct_answer": "Bachelor of Arts",
+      "Difficulty Level": "Beginner",
+      "subject": "BA"
+    },
+    {
+      "question": "What does 'cite' mean in academic writing?",
+      "options": [
+        "To ignore sources",
+        "To give credit to sources",
+        "To plagiarize information",
+        "To avoid research"
+      ],
+      "correct_answer": "To give credit to sources",
+      "Difficulty Level": "Beginner",
+      "subject": "BA"
+    },
+    {
+      "question": "Which of the following is a type of essay?",
+      "options": [
+        "Novel",
+        "Poem",
+        "Narrative",
+        "Textbook"
+      ],
+      "correct_answer": "Narrative",
+      "Difficulty Level": "Beginner",
+      "subject": "BA"
+    },
+    {
+      "question": "What is 'rhetoric'?",
+      "options": [
+        "The art of persuasive speaking or writing",
+        "Strict adherence to facts only",
+        "Speaking without thinking",
+        "Using complicated vocabulary"
+      ],
+      "correct_answer": "The art of persuasive speaking or writing",
+      "Difficulty Level": "Beginner",
+      "subject": "BA"
+    },
+    {
+      "question": "What does 'analysis' mean?",
+      "options": [
+        "Ignoring details",
+        "Examining something closely",
+        "Accepting everything at face value",
+        "Making things up"
+      ],
+      "correct_answer": "Examining something closely",
+      "Difficulty Level": "Beginner",
+      "subject": "BA"
+    },
+    {
+      "question": "Which is a common skill developed through a BA degree?",
+      "options": [
+        "Coding",
+        "Welding",
+        "Critical Thinking",
+        "Accounting"
+      ],
+      "correct_answer": "Critical Thinking",
+      "Difficulty Level": "Beginner",
+      "subject": "BA"
+    },
+    {
+      "question": "What is 'research' primarily about?",
+      "options": [
+        "Finding information quickly",
+        "Proving a point",
+        "Systematic investigation",
+        "Making assumptions"
+      ],
+      "correct_answer": "Systematic investigation",
+      "Difficulty Level": "Beginner",
+      "subject": "BA"
+    },
+    {
+      "question": "What is 'perspective'?",
+      "options": [
+        "A scientific measurement",
+        "A point of view",
+        "Ignoring other's opinions",
+        "Seeing only one side of an issue"
+      ],
+      "correct_answer": "A point of view",
+      "Difficulty Level": "Beginner",
+      "subject": "BA"
+    },
+    {
+      "question": "What is 'argumentation'?",
+      "options": [
+        "Disagreeing with everyone",
+        "Presenting reasons for a belief",
+        "Ignoring evidence",
+        "Making assumptions"
+      ],
+      "correct_answer": "Presenting reasons for a belief",
+      "Difficulty Level": "Beginner",
+      "subject": "BA"
+    },
+    {
+      "question": "What is the meaning of 'social sciences'?",
+      "options": [
+        "The study of the natural world",
+        "The study of human society and social relationships",
+        "The study of outer space",
+        "The study of ancient languages"
+      ],
+      "correct_answer": "The study of human society and social relationships",
+      "Difficulty Level": "Beginner",
+      "subject": "BA"
+    },
+    {
+      "question": "What is a 'thesis statement'?",
+      "options": [
+        "A detailed summary of the entire essay",
+        "The main argument of an essay",
+        "A conclusion to the essay",
+        "An introductory sentence with no clear point"
+      ],
+      "correct_answer": "The main argument of an essay",
+      "Difficulty Level": "Beginner",
+      "subject": "BA"
+    },
+    {
+      "question": "What is a 'secondary source'?",
+      "options": [
+        "Original research data",
+        "An analysis of primary sources",
+        "A personal diary",
+        "An autobiography"
+      ],
+      "correct_answer": "An analysis of primary sources",
+      "Difficulty Level": "Beginner",
+      "subject": "BA"
+    },
+    {
+      "question": "What is a 'primary source'?",
+      "options": [
+        "A summary of an event",
+        "Information from a textbook",
+        "A firsthand account",
+        "Someone's opinion"
+      ],
+      "correct_answer": "A firsthand account",
+      "Difficulty Level": "Beginner",
+      "subject": "BA"
+    }
+  ],
+  "access": {
+    "mode": "all",
+    "user_ids": [
+      "Aditya"
+    ]
+  }
+}

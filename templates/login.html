@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+    <div class="auth-form">
+        <h2>Login</h2>
+        <form method="POST" action="{{ url_for('login') }}" autocomplete="on">
+            <div class="form-group">
+                <label for="username">Username or Unique ID:</label>
+                <input type="text" id="username" name="username" placeholder="Enter username or unique ID" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" placeholder="Enter your password" required>
+            </div>
+            <button type="submit">Login</button>
+        </form>
+        <p><a href="{{ url_for('forget_password') }}">Forgot Password?</a></p>
+        <p>Don't have an account? <a href="{{ url_for('signup') }}">Sign Up</a></p>
+    </div>
+{% endblock %}
